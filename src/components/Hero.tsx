@@ -89,9 +89,72 @@ export default function Hero() {
         })
         yPosition = yPosition + 10
         
+        // Parcours - ORDRE SPÉCIFIQUE: professionnel, formations, universitaire, scolaire
+        const educationData = JSON.parse(localStorage.getItem('education') || '[]')
+        if (educationData.length > 0) {
+          if (yPosition > 240) {
+            pdf.addPage()
+            yPosition = 20
+          }
+          
+          pdf.setFontSize(12)
+          pdf.setFont('helvetica', 'bold')
+          pdf.setTextColor(255, 140, 0)
+          pdf.text('PARCOURS', 20, yPosition)
+          yPosition = yPosition + 10
+          
+          // Ordre spécifique des types
+          const typeOrder = ['professionnel', 'formations', 'universitaire', 'scolaire']
+          const sortedEducation = educationData.sort((a: any, b: any) => {
+            const aIndex = typeOrder.indexOf(a.type)
+            const bIndex = typeOrder.indexOf(b.type)
+            if (aIndex === -1) return 1
+            if (bIndex === -1) return -1
+            return aIndex - bIndex
+          })
+          
+          sortedEducation.slice(0, 8).forEach((item: any) => {
+            if (yPosition > 270) {
+              pdf.addPage()
+              yPosition = 20
+            }
+            
+            pdf.setFont('helvetica', 'bold')
+            pdf.setFontSize(11)
+            pdf.text(item.title, 20, yPosition)
+            yPosition = yPosition + 7
+            
+            pdf.setFont('helvetica', 'normal')
+            pdf.setFontSize(9)
+            pdf.text(`${item.institution} • ${item.location}`, 20, yPosition)
+            yPosition = yPosition + 6
+            pdf.text(`${item.startDate} - ${item.endDate || 'Présent'}`, 20, yPosition)
+            yPosition = yPosition + 6
+            
+            if (item.description) {
+              const descText = item.description.substring(0, 250)
+              const descLines = pdf.splitTextToSize(descText, 170, 9)
+              descLines.forEach((line: string) => {
+                if (yPosition > 270) {
+                  pdf.addPage()
+                  yPosition = 20
+                }
+                pdf.text(line, 25, yPosition)
+                yPosition = yPosition + 5
+              })
+            }
+            yPosition = yPosition + 8
+          })
+        }
+        
         // Compétences
         const skillsData = JSON.parse(localStorage.getItem('skills') || '[]')
         if (skillsData.length > 0) {
+          if (yPosition > 240) {
+            pdf.addPage()
+            yPosition = 20
+          }
+          
           pdf.setFontSize(12)
           pdf.setFont('helvetica', 'bold')
           pdf.setTextColor(255, 140, 0)
@@ -125,54 +188,6 @@ export default function Hero() {
               yPosition = yPosition + 6
             })
             yPosition = yPosition + 5
-          })
-        }
-        
-        // Parcours
-        const educationData = JSON.parse(localStorage.getItem('education') || '[]')
-        if (educationData.length > 0) {
-          if (yPosition > 240) {
-            pdf.addPage()
-            yPosition = 20
-          }
-          
-          pdf.setFontSize(12)
-          pdf.setFont('helvetica', 'bold')
-          pdf.setTextColor(255, 140, 0)
-          pdf.text('PARCOURS', 20, yPosition)
-          yPosition = yPosition + 10
-          
-          educationData.slice(0, 8).forEach((item: any) => {
-            if (yPosition > 270) {
-              pdf.addPage()
-              yPosition = 20
-            }
-            
-            pdf.setFont('helvetica', 'bold')
-            pdf.setFontSize(11)
-            pdf.text(item.title, 20, yPosition)
-            yPosition = yPosition + 7
-            
-            pdf.setFont('helvetica', 'normal')
-            pdf.setFontSize(9)
-            pdf.text(`${item.institution} • ${item.location}`, 20, yPosition)
-            yPosition = yPosition + 6
-            pdf.text(`${item.startDate} - ${item.endDate || 'Présent'}`, 20, yPosition)
-            yPosition = yPosition + 6
-            
-            if (item.description) {
-              const descText = item.description.substring(0, 250)
-              const descLines = pdf.splitTextToSize(descText, 170, 9)
-              descLines.forEach((line: string) => {
-                if (yPosition > 270) {
-                  pdf.addPage()
-                  yPosition = 20
-                }
-                pdf.text(line, 25, yPosition)
-                yPosition = yPosition + 5
-              })
-            }
-            yPosition = yPosition + 8
           })
         }
         
