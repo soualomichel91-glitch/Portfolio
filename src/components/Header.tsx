@@ -1,19 +1,37 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
 import { Menu, X, Moon, Sun } from 'lucide-react'
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const router = useRouter()
+  const pathname = usePathname()
 
   const navigation = [
-    { name: 'Accueil', href: '#home' },
-    { name: 'À propos', href: '#about' },
-    { name: 'Projets', href: '#projects' },
-    { name: 'Compétences', href: '#skills' },
-    { name: 'Parcours', href: '/parcours' },
-    { name: 'Contact', href: '#contact' },
+    { name: 'Accueil', href: '#home', route: '/' },
+    { name: 'À propos', href: '#about', route: '/' },
+    { name: 'Projets', href: '#projects', route: '/' },
+    { name: 'Compétences', href: '#skills', route: '/' },
+    { name: 'Parcours', href: '/parcours', route: '/parcours' },
+    { name: 'Contact', href: '#contact', route: '/' },
   ]
+
+  const handleNavigation = (item: typeof navigation[0]) => {
+    setIsMenuOpen(false)
+    
+    if (pathname === item.route) {
+      // Si on est déjà sur la bonne page, scroller vers l'ancre
+      const element = document.getElementById(item.href.substring(1))
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' })
+      }
+    } else {
+      // Sinon, naviguer vers la page puis scroller
+      router.push(item.route + item.href)
+    }
+  }
 
   return (
     <header className="fixed top-0 w-full bg-night-blue/90 backdrop-blur-md z-50 border-b border-white/10">
@@ -29,13 +47,13 @@ export default function Header() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navigation.map((item) => (
-              <a
+              <button
                 key={item.name}
-                href={item.href}
+                onClick={() => handleNavigation(item)}
                 className="text-light-blue hover:text-orange transition-colors duration-200"
               >
                 {item.name}
-              </a>
+              </button>
             ))}
           </div>
 
@@ -54,14 +72,13 @@ export default function Header() {
         {isMenuOpen && (
           <div className="md:hidden mt-4 pb-4">
             {navigation.map((item) => (
-              <a
+              <button
                 key={item.name}
-                href={item.href}
-                className="block py-2 text-light-blue hover:text-orange transition-colors duration-200"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={() => handleNavigation(item)}
+                className="block py-2 text-light-blue hover:text-orange transition-colors duration-200 w-full text-left"
               >
                 {item.name}
-              </a>
+              </button>
             ))}
           </div>
         )}
