@@ -23,13 +23,21 @@ export default function Header() {
     
     if (pathname === item.route) {
       // Si on est déjà sur la bonne page, scroller vers l'ancre
-      const element = document.getElementById(item.href.substring(1))
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' })
+      if (item.href.startsWith('#')) {
+        const element = document.getElementById(item.href.substring(1))
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' })
+        }
       }
     } else {
-      // Sinon, naviguer vers la page puis scroller
-      router.push(item.route + item.href)
+      // Sinon, naviguer vers la page
+      if (item.href.startsWith('/')) {
+        // C'est une route complète (comme /parcours)
+        router.push(item.href)
+      } else {
+        // C'est une ancre, naviguer vers la page puis scroller
+        router.push(item.route + item.href)
+      }
     }
   }
 
