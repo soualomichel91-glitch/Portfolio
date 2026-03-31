@@ -26,35 +26,29 @@ export default function About() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="flex justify-center">
               <div className="relative group">
-                <div className="relative w-80 h-80 rounded-3xl overflow-visible shadow-2xl border-4 border-orange/20 hover:border-orange/40 transition-all duration-300 transform hover:scale-105">
-                  <div className="relative w-80 h-80 flex items-center justify-center">
-                    {personalInfo.profilePhoto ? (
-                      <img
-                        src={personalInfo.profilePhoto}
-                        alt="Photo de profil"
-                        className="max-w-full max-h-full object-contain"
-                        style={{
-                          transform: personalInfo.photoPosition 
-                            ? `scale(${personalInfo.photoPosition.scale}) translate(${personalInfo.photoPosition.x}px, ${personalInfo.photoPosition.y}px)`
-                            : 'scale(1) translate(0px, 0px)',
-                          width: 'auto',
-                          height: 'auto'
-                        }}
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-orange via-orange to-light-orange rounded-3xl flex items-center justify-center">
-                        <span className="text-white text-7xl font-bold drop-shadow-lg">
-                          {personalInfo.name.split(' ').map(n => n[0]).join('')}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  
-                  {/* Cadre décoratif */}
-                  <div className="absolute inset-0 border-4 border-orange/20 rounded-3xl pointer-events-none"></div>
+                <div className="relative w-80 h-80 rounded-3xl overflow-hidden shadow-2xl border-4 border-orange/20 hover:border-orange/40 transition-all duration-300 transform hover:scale-105">
+                  {personalInfo.profilePhoto ? (
+                    <img
+                      src={personalInfo.profilePhoto}
+                      alt="Photo de profil"
+                      className="w-full h-full object-cover"
+                      style={{
+                        transform: personalInfo.photoPosition 
+                          ? `scale(${personalInfo.photoPosition.scale}) translate(${personalInfo.photoPosition.x}px, ${personalInfo.photoPosition.y}px)`
+                          : 'scale(1) translate(0px, 0px)',
+                        objectPosition: 'center'
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-orange via-orange to-light-orange rounded-3xl flex items-center justify-center">
+                      <span className="text-white text-7xl font-bold drop-shadow-lg">
+                        {personalInfo.name.split(' ').map(n => n[0]).join('')}
+                      </span>
+                    </div>
+                  )}
                   
                   {/* Effet de vignette */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none rounded-3xl"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none"></div>
                   
                   {/* Bordure décorative */}
                   <div className="absolute -inset-1 bg-gradient-to-r from-orange to-light-orange rounded-3xl opacity-20 blur-sm"></div>
