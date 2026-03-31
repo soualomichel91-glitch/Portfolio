@@ -24,9 +24,46 @@ export default function About() {
           </h2>
           
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="card">
-              <div className="w-64 h-64 bg-gradient-to-br from-orange to-light-orange rounded-full mx-auto mb-6 flex items-center justify-center">
-                <span className="text-white text-6xl font-bold">{personalInfo.name.split(' ').map(n => n[0]).join('')}</span>
+            <div className="flex justify-center">
+              <div className="relative group">
+                <div className="relative w-80 h-80 rounded-3xl overflow-visible shadow-2xl border-4 border-orange/20 hover:border-orange/40 transition-all duration-300 transform hover:scale-105">
+                  <div className="relative w-80 h-80 flex items-center justify-center">
+                    {personalInfo.profilePhoto ? (
+                      <img
+                        src={personalInfo.profilePhoto}
+                        alt="Photo de profil"
+                        className="max-w-full max-h-full object-contain"
+                        style={{
+                          transform: personalInfo.photoPosition 
+                            ? `scale(${personalInfo.photoPosition.scale}) translate(${personalInfo.photoPosition.x}px, ${personalInfo.photoPosition.y}px)`
+                            : 'scale(1) translate(0px, 0px)',
+                          width: 'auto',
+                          height: 'auto'
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-orange via-orange to-light-orange rounded-3xl flex items-center justify-center">
+                        <span className="text-white text-7xl font-bold drop-shadow-lg">
+                          {personalInfo.name.split(' ').map(n => n[0]).join('')}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Cadre décoratif */}
+                  <div className="absolute inset-0 border-4 border-orange/20 rounded-3xl pointer-events-none"></div>
+                  
+                  {/* Effet de vignette */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none rounded-3xl"></div>
+                  
+                  {/* Bordure décorative */}
+                  <div className="absolute -inset-1 bg-gradient-to-r from-orange to-light-orange rounded-3xl opacity-20 blur-sm"></div>
+                </div>
+                
+                {/* Élément décoratif */}
+                <div className="absolute -bottom-4 -right-4 w-20 h-20 bg-orange rounded-full flex items-center justify-center shadow-lg">
+                  <span className="text-white text-2xl font-bold">SM</span>
+                </div>
               </div>
             </div>
             
@@ -43,6 +80,22 @@ export default function About() {
                 <div className="text-center">
                   <div className="text-3xl font-bold text-orange mb-2">20+</div>
                   <div className="text-light-blue">Projets réalisés</div>
+                </div>
+              </div>
+              
+              {/* Informations de contact */}
+              <div className="pt-6 space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-orange rounded-full"></div>
+                  <span className="text-white font-medium">{personalInfo.email}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-orange rounded-full"></div>
+                  <span className="text-white font-medium">{personalInfo.phone}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-orange rounded-full"></div>
+                  <span className="text-white font-medium">{personalInfo.location}</span>
                 </div>
               </div>
             </div>

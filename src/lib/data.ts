@@ -21,6 +21,26 @@ export interface PersonalInfo {
   phone: string
   location: string
   bio: string
+  profilePhoto?: string
+  photoPosition?: {
+    scale: number
+    x: number
+    y: number
+  }
+  cvUrl?: string
+}
+
+export interface Education {
+  id: number
+  type: 'scolaire' | 'universitaire' | 'professionnel' | 'formation'
+  title: string
+  institution: string
+  location: string
+  startDate: string
+  endDate: string
+  description?: string
+  current?: boolean
+  skills?: string[]
 }
 
 export const defaultProjects: Project[] = [
@@ -74,5 +94,75 @@ export const defaultPersonalInfo: PersonalInfo = {
   email: "contact@soualomichel.com",
   phone: "+33 6 12 34 56 78",
   location: "Paris, France",
-  bio: "Passionné par le développement web depuis plusieurs ans, je me spécialise dans la création d'applications modernes et performantes. Mon expertise couvre l'ensemble de la stack technologique, de la conception d'interfaces utilisateur élégantes à la mise en place d'architectures backend robustes."
+  bio: "Passionné par le développement web depuis plusieurs années, je me spécialise dans la création d'applications modernes et performantes avec React, Next.js et Node.js. Toujours en veille technologique, j'aime relever de nouveaux défis techniques.",
+  profilePhoto: ""
 }
+
+export const defaultEducation: Education[] = [
+  {
+    id: 1,
+    type: 'scolaire',
+    title: 'Baccalauréat Scientifique',
+    institution: 'Lycée Louis Pasteur',
+    location: 'Paris, France',
+    startDate: '2015-09',
+    endDate: '2018-06',
+    description: 'Spécialité Mathématiques et Physique-Chimie'
+  },
+  {
+    id: 2,
+    type: 'universitaire',
+    title: 'Licence Informatique',
+    institution: 'Université Paris-Saclay',
+    location: 'Orsay, France',
+    startDate: '2018-09',
+    endDate: '2021-06',
+    description: 'Programmation, algorithmique, bases de données, développement web',
+    skills: ['Java', 'Python', 'SQL', 'UML']
+  },
+  {
+    id: 3,
+    type: 'universitaire',
+    title: 'Master Développement Web',
+    institution: 'Ecole Supérieure du Numérique',
+    location: 'Paris, France',
+    startDate: '2021-09',
+    endDate: '2023-06',
+    description: 'Développement full-stack, architecture logicielle, gestion de projet',
+    skills: ['React', 'Node.js', 'MongoDB', 'Agile']
+  },
+  {
+    id: 4,
+    type: 'professionnel',
+    title: 'Développeur Frontend',
+    institution: 'Tech Startup Paris',
+    location: 'Paris, France',
+    startDate: '2023-07',
+    endDate: '2024-02',
+    description: 'Développement d\'applications React/Next.js, collaboration avec l\'équipe backend',
+    skills: ['React', 'TypeScript', 'Tailwind CSS', 'Git']
+  },
+  {
+    id: 5,
+    type: 'professionnel',
+    title: 'Développeur Full Stack',
+    institution: 'Digital Agency Pro',
+    location: 'Paris, France',
+    startDate: '2024-03',
+    endDate: '',
+    current: true,
+    description: 'Développement complet d\'applications web pour clients variés, maintenance et évolution des projets existants',
+    skills: ['Next.js', 'Node.js', 'PostgreSQL', 'Docker', 'AWS']
+  },
+  {
+    id: 6,
+    type: 'formation',
+    title: 'Certification AWS Cloud Practitioner',
+    institution: 'Amazon Web Services',
+    location: 'En ligne',
+    startDate: '2024-01',
+    endDate: '2024-03',
+    description: 'Formation sur les services AWS, déploiement cloud, sécurité',
+    skills: ['AWS', 'Cloud Computing', 'S3', 'EC2']
+  }
+]

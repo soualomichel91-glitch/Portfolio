@@ -11,6 +11,7 @@ export default function Header() {
     { name: 'À propos', href: '#about' },
     { name: 'Projets', href: '#projects' },
     { name: 'Compétences', href: '#skills' },
+    { name: 'Parcours', href: '/parcours' },
     { name: 'Contact', href: '#contact' },
   ]
 
