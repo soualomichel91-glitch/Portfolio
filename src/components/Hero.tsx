@@ -18,6 +18,9 @@ export default function Hero() {
         const pdf = new jsPDF()
         
         let yPosition = 20
+        let currentPage = 1
+        
+        console.log('Début génération CV...')
         
         // En-tête avec photo
         if (personalInfo.profilePhoto) {
@@ -89,20 +92,27 @@ export default function Hero() {
         })
         yPosition = yPosition + 10
         
+        console.log('Section ABOUT terminée, yPosition:', yPosition)
+        
         // Parcours - ORDRE SPÉCIFIQUE: professionnel, formations, universitaire, scolaire
         const educationData = JSON.parse(localStorage.getItem('education') || '[]')
+        console.log('Education data:', educationData) // Debug
+        
+        // Toujours afficher la section Parcours
+        if (yPosition > 240) {
+          pdf.addPage()
+          currentPage++
+          console.log('Nouvelle page ajoutée pour PARCOURS, page:', currentPage)
+          yPosition = 20
+        }
+        
+        pdf.setFontSize(12)
+        pdf.setFont('helvetica', 'bold')
+        pdf.setTextColor(255, 140, 0)
+        pdf.text('PARCOURS', 20, yPosition)
+        yPosition = yPosition + 10
+        
         if (educationData.length > 0) {
-          if (yPosition > 240) {
-            pdf.addPage()
-            yPosition = 20
-          }
-          
-          pdf.setFontSize(12)
-          pdf.setFont('helvetica', 'bold')
-          pdf.setTextColor(255, 140, 0)
-          pdf.text('PARCOURS', 20, yPosition)
-          yPosition = yPosition + 10
-          
           // Ordre spécifique des types
           const typeOrder = ['professionnel', 'formations', 'universitaire', 'scolaire']
           const sortedEducation = educationData.sort((a: any, b: any) => {
@@ -116,6 +126,8 @@ export default function Hero() {
           sortedEducation.slice(0, 8).forEach((item: any) => {
             if (yPosition > 270) {
               pdf.addPage()
+              currentPage++
+              console.log('Nouvelle page ajoutée dans parcours, page:', currentPage)
               yPosition = 20
             }
             
@@ -137,6 +149,7 @@ export default function Hero() {
               descLines.forEach((line: string) => {
                 if (yPosition > 270) {
                   pdf.addPage()
+                  currentPage++
                   yPosition = 20
                 }
                 pdf.text(line, 25, yPosition)
@@ -145,22 +158,36 @@ export default function Hero() {
             }
             yPosition = yPosition + 8
           })
+        } else {
+          pdf.setFont('helvetica', 'normal')
+          pdf.setFontSize(10)
+          pdf.setTextColor(30, 30, 30)
+          pdf.text('Aucune expérience ajoutée pour le moment.', 20, yPosition)
+          yPosition = yPosition + 10
+          console.log('No education data found') // Debug
         }
+        
+        console.log('Section PARCOURS terminée, yPosition:', yPosition)
         
         // Compétences
         const skillsData = JSON.parse(localStorage.getItem('skills') || '[]')
+        console.log('Skills data:', skillsData) // Debug
+        
+        // Toujours afficher la section Compétences
+        if (yPosition > 240) {
+          pdf.addPage()
+          currentPage++
+          console.log('Nouvelle page ajoutée pour COMPÉTENCES, page:', currentPage)
+          yPosition = 20
+        }
+        
+        pdf.setFontSize(12)
+        pdf.setFont('helvetica', 'bold')
+        pdf.setTextColor(255, 140, 0)
+        pdf.text('COMPÉTENCES', 20, yPosition)
+        yPosition = yPosition + 10
+        
         if (skillsData.length > 0) {
-          if (yPosition > 240) {
-            pdf.addPage()
-            yPosition = 20
-          }
-          
-          pdf.setFontSize(12)
-          pdf.setFont('helvetica', 'bold')
-          pdf.setTextColor(255, 140, 0)
-          pdf.text('COMPÉTENCES', 20, yPosition)
-          yPosition = yPosition + 10
-          
           // Regrouper par catégorie
           const skillsByCategory = skillsData.reduce((acc: any, skill: any) => {
             if (!acc[skill.category]) acc[skill.category] = []
@@ -171,6 +198,7 @@ export default function Hero() {
           Object.entries(skillsByCategory).forEach(([category, skills]: [string, any]) => {
             if (yPosition > 260) {
               pdf.addPage()
+              currentPage++
               yPosition = 20
             }
             
@@ -189,25 +217,40 @@ export default function Hero() {
             })
             yPosition = yPosition + 5
           })
+        } else {
+          pdf.setFont('helvetica', 'normal')
+          pdf.setFontSize(10)
+          pdf.setTextColor(30, 30, 30)
+          pdf.text('Aucune compétence ajoutée pour le moment.', 20, yPosition)
+          yPosition = yPosition + 10
+          console.log('No skills data found') // Debug
         }
+        
+        console.log('Section COMPÉTENCES terminée, yPosition:', yPosition)
         
         // Projets
         const projectsData = JSON.parse(localStorage.getItem('projects') || '[]')
+        console.log('Projects data:', projectsData) // Debug
+        
+        // Toujours afficher la section Projets
+        if (yPosition > 240) {
+          pdf.addPage()
+          currentPage++
+          console.log('Nouvelle page ajoutée pour PROJETS, page:', currentPage)
+          yPosition = 20
+        }
+        
+        pdf.setFontSize(12)
+        pdf.setFont('helvetica', 'bold')
+        pdf.setTextColor(255, 140, 0)
+        pdf.text('PROJETS', 20, yPosition)
+        yPosition = yPosition + 10
+        
         if (projectsData.length > 0) {
-          if (yPosition > 240) {
-            pdf.addPage()
-            yPosition = 20
-          }
-          
-          pdf.setFontSize(12)
-          pdf.setFont('helvetica', 'bold')
-          pdf.setTextColor(255, 140, 0)
-          pdf.text('PROJETS', 20, yPosition)
-          yPosition = yPosition + 10
-          
           projectsData.slice(0, 6).forEach((project: any) => {
             if (yPosition > 260) {
               pdf.addPage()
+              currentPage++
               yPosition = 20
             }
             
@@ -226,6 +269,7 @@ export default function Hero() {
               descLines.forEach((line: string) => {
                 if (yPosition > 270) {
                   pdf.addPage()
+                  currentPage++
                   yPosition = 20
                 }
                 pdf.text(line, 25, yPosition)
@@ -245,10 +289,21 @@ export default function Hero() {
             
             yPosition = yPosition + 10
           })
+        } else {
+          pdf.setFont('helvetica', 'normal')
+          pdf.setFontSize(10)
+          pdf.setTextColor(30, 30, 30)
+          pdf.text('Aucun projet ajouté pour le moment.', 20, yPosition)
+          yPosition = yPosition + 10
+          console.log('No projects data found') // Debug
         }
+        
+        console.log('Section PROJETS terminée, yPosition:', yPosition)
+        console.log('Nombre total de pages:', currentPage)
         
         // Télécharger le PDF
         pdf.save(`CV_${personalInfo.name.replace(' ', '_')}.pdf`)
+        console.log('CV sauvegardé avec succès!')
       }
     } catch (error) {
       console.error('Erreur lors de la génération du CV:', error)
