@@ -253,7 +253,7 @@ export default function Hero() {
 
   if (loading) {
     return (
-      <section id="hero" className="min-h-screen flex items-center justify-center bg-night-blue">
+      <section id="hero" className="min-h-screen flex items-center justify-center bg-night-blue pt-20">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange"></div>
           <p className="text-light-blue mt-4">Chargement...</p>
@@ -263,14 +263,14 @@ export default function Hero() {
   }
 
   return (
-    <section id="hero" className="min-h-screen flex items-center justify-center bg-gradient-to-br from-night-blue via-dark-blue to-night-blue relative overflow-hidden">
+    <section id="hero" className="min-h-screen flex items-center justify-center bg-gradient-to-br from-night-blue via-dark-blue to-night-blue relative overflow-hidden pt-20">
       {/* Animated background */}
       <div className="absolute inset-0">
         <div className="absolute top-0 left-0 w-96 h-96 bg-orange/10 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-light-orange/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
       </div>
       
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-6 relative z-10 mt-8">
         <div className="text-center">
           {/* Profile image with animation */}
           <div className="mb-8 animate-fade-in-up">
