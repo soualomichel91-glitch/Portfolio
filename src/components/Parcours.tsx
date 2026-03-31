@@ -1,62 +1,17 @@
 'use client'
 
 import { useState } from 'react'
-import { GraduationCap, Briefcase, Award, BookOpen, Plus, Edit2, Trash2, Save, X } from 'lucide-react'
+import { GraduationCap, Briefcase, Award, BookOpen } from 'lucide-react'
 import { usePortfolio } from '@/hooks/usePortfolio'
 import { Education } from '@/lib/data'
 
-export default function ParcoursPage() {
-  const { education, saveEducation } = usePortfolio()
+export default function Parcours() {
+  const { education } = usePortfolio()
   const [activeFilter, setActiveFilter] = useState<'all' | 'scolaire' | 'universitaire' | 'professionnel' | 'formation'>('all')
-  const [isEditing, setIsEditing] = useState(false)
-  const [editingItem, setEditingItem] = useState<Education | null>(null)
 
   const filteredEducation = education.filter(item => 
     activeFilter === 'all' || item.type === activeFilter
   )
-
-  const handleAddEducation = () => {
-    setEditingItem({
-      id: Date.now(),
-      type: 'scolaire',
-      title: '',
-      institution: '',
-      location: '',
-      startDate: '',
-      endDate: '',
-      description: '',
-      current: false,
-      skills: []
-    })
-    setIsEditing(true)
-  }
-
-  const handleEditEducation = (item: Education) => {
-    setEditingItem(item)
-    setIsEditing(true)
-  }
-
-  const handleSaveEducation = () => {
-    if (!editingItem) return
-    
-    if (editingItem.id && education.find(e => e.id === editingItem.id)) {
-      const updated = education.map(e => e.id === editingItem.id ? editingItem : e)
-      saveEducation(updated)
-    } else {
-      const newEducation = [...education, editingItem]
-      saveEducation(newEducation)
-    }
-    
-    setIsEditing(false)
-    setEditingItem(null)
-  }
-
-  const handleDeleteEducation = (id: number) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette expérience ?')) return
-    
-    const updated = education.filter(e => e.id !== id)
-    saveEducation(updated)
-  }
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -83,143 +38,6 @@ export default function ParcoursPage() {
     const [year, month] = dateString.split('-')
     const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc']
     return `${months[parseInt(month) - 1]} ${year}`
-  }
-
-  if (isEditing && editingItem) {
-    return (
-      <div className="min-h-screen bg-night-blue p-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold text-white mb-2">Modifier le parcours</h1>
-            <p className="text-light-blue">Ajoutez ou modifiez vos expériences éducatives et professionnelles</p>
-          </div>
-
-          <div className="card animate-fade-in">
-            <h3 className="text-xl font-semibold text-white mb-6">
-              {editingItem.id ? 'Modifier une expérience' : 'Ajouter une expérience'}
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-white font-medium mb-2">Type *</label>
-                <select
-                  value={editingItem.type}
-                  onChange={(e) => setEditingItem({...editingItem, type: e.target.value as Education['type']})}
-                  className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-orange"
-                >
-                  <option value="scolaire">Scolaire</option>
-                  <option value="universitaire">Universitaire</option>
-                  <option value="professionnel">Professionnel</option>
-                  <option value="formation">Formation</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-white font-medium mb-2">Titre *</label>
-                <input
-                  type="text"
-                  value={editingItem.title}
-                  onChange={(e) => setEditingItem({...editingItem, title: e.target.value})}
-                  className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-orange"
-                  placeholder="Titre du diplôme ou du poste"
-                />
-              </div>
-              <div>
-                <label className="block text-white font-medium mb-2">Institution *</label>
-                <input
-                  type="text"
-                  value={editingItem.institution}
-                  onChange={(e) => setEditingItem({...editingItem, institution: e.target.value})}
-                  className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-orange"
-                  placeholder="Nom de l'établissement ou de l'entreprise"
-                />
-              </div>
-              <div>
-                <label className="block text-white font-medium mb-2">Localisation *</label>
-                <input
-                  type="text"
-                  value={editingItem.location}
-                  onChange={(e) => setEditingItem({...editingItem, location: e.target.value})}
-                  className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-orange"
-                  placeholder="Ville, Pays"
-                />
-              </div>
-              <div>
-                <label className="block text-white font-medium mb-2">Date de début *</label>
-                <input
-                  type="month"
-                  value={editingItem.startDate}
-                  onChange={(e) => setEditingItem({...editingItem, startDate: e.target.value})}
-                  className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-orange"
-                />
-              </div>
-              <div>
-                <label className="block text-white font-medium mb-2">Date de fin</label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="month"
-                    value={editingItem.endDate}
-                    onChange={(e) => setEditingItem({...editingItem, endDate: e.target.value})}
-                    disabled={editingItem.current}
-                    className="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-orange disabled:opacity-50"
-                  />
-                  <label className="flex items-center gap-2 text-white">
-                    <input
-                      type="checkbox"
-                      checked={editingItem.current}
-                      onChange={(e) => setEditingItem({...editingItem, current: e.target.checked, endDate: e.target.checked ? '' : editingItem.endDate})}
-                      className="w-4 h-4 text-orange focus:ring-orange focus:ring-offset-0"
-                    />
-                    En cours
-                  </label>
-                </div>
-              </div>
-            </div>
-            
-            <div className="mb-4">
-              <label className="block text-white font-medium mb-2">Description</label>
-              <textarea
-                value={editingItem.description}
-                onChange={(e) => setEditingItem({...editingItem, description: e.target.value})}
-                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-orange resize-none"
-                rows={3}
-                placeholder="Description du cursus, des responsabilités ou des compétences acquises"
-              />
-            </div>
-            
-            <div className="mb-6">
-              <label className="block text-white font-medium mb-2">Compétences acquises</label>
-              <input
-                type="text"
-                value={editingItem.skills?.join(', ') || ''}
-                onChange={(e) => setEditingItem({...editingItem, skills: e.target.value.split(',').map(s => s.trim())})}
-                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-orange"
-                placeholder="React, Node.js, TypeScript (séparées par des virgules)"
-              />
-            </div>
-            
-            <div className="flex gap-2">
-              <button
-                onClick={handleSaveEducation}
-                className="btn-primary flex items-center gap-2"
-              >
-                <Save size={18} />
-                Sauvegarder
-              </button>
-              <button
-                onClick={() => {
-                  setIsEditing(false)
-                  setEditingItem(null)
-                }}
-                className="btn-secondary flex items-center gap-2"
-              >
-                <X size={18} />
-                Annuler
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
   }
 
   return (
@@ -254,17 +72,6 @@ export default function ParcoursPage() {
           ))}
         </div>
 
-        {/* Bouton d'ajout */}
-        <div className="flex justify-end mb-6">
-          <button
-            onClick={handleAddEducation}
-            className="btn-primary flex items-center gap-2"
-          >
-            <Plus size={20} />
-            Ajouter une expérience
-          </button>
-        </div>
-
         {/* Timeline */}
         <div className="space-y-6">
           {filteredEducation.map((item, index) => (
@@ -277,26 +84,10 @@ export default function ParcoursPage() {
                 </div>
                 
                 <div className="flex-1">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="text-xl font-semibold text-white">{item.title}</h3>
-                      <p className="text-light-blue font-medium">{item.institution}</p>
-                      <p className="text-light-blue text-sm">{item.location}</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleEditEducation(item)}
-                        className="p-2 hover:bg-white/10 rounded-lg transition-colors duration-200"
-                      >
-                        <Edit2 size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteEducation(item.id)}
-                        className="p-2 hover:bg-white/10 rounded-lg transition-colors duration-200 text-red-400"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
+                  <div className="mb-2">
+                    <h3 className="text-xl font-semibold text-white">{item.title}</h3>
+                    <p className="text-light-blue font-medium">{item.institution}</p>
+                    <p className="text-light-blue text-sm">{item.location}</p>
                   </div>
                   
                   <div className="mb-3">
