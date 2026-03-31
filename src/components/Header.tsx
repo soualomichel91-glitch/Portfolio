@@ -1,10 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Menu, X, Moon, Sun } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const pathname = usePathname()
 
   const navigation = [
     { name: 'Accueil', href: '#home' },
@@ -14,6 +16,9 @@ export default function Header() {
     { name: 'Parcours', href: '/parcours' },
     { name: 'Contact', href: '#contact' },
   ]
+
+  // Ne pas afficher l'onglet Admin sur la page admin elle-même
+  const isAdminPage = pathname === '/admin'
 
   return (
     <header className="fixed top-0 w-full bg-night-blue/90 backdrop-blur-md z-50 border-b border-white/10">
@@ -37,12 +42,14 @@ export default function Header() {
                 {item.name}
               </a>
             ))}
-            <a
-              href="/admin"
-              className="btn-primary text-sm"
-            >
-              Admin
-            </a>
+            {!isAdminPage && (
+              <a
+                href="/admin"
+                className="btn-primary text-sm"
+              >
+                Admin
+              </a>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -69,12 +76,14 @@ export default function Header() {
                 {item.name}
               </a>
             ))}
-            <a
-              href="/admin"
-              className="block mt-4 btn-primary text-sm text-center"
-            >
-              Admin
-            </a>
+            {!isAdminPage && (
+              <a
+                href="/admin"
+                className="block mt-4 btn-primary text-sm text-center"
+              >
+                Admin
+              </a>
+            )}
           </div>
         )}
       </nav>
