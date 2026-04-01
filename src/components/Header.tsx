@@ -21,7 +21,10 @@ export default function Header() {
   const handleNavigation = (item: typeof navigation[0]) => {
     setIsMenuOpen(false)
     
-    if (pathname === item.route) {
+    if (item.href === '#hero') {
+      // Cas spécial pour Accueil - toujours scroller en haut
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } else if (pathname === item.route) {
       // Si on est déjà sur la bonne page, scroller vers l'ancre
       if (item.href.startsWith('#')) {
         const element = document.getElementById(item.href.substring(1))
