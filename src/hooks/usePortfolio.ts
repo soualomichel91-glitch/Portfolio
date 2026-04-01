@@ -23,6 +23,7 @@ export function usePortfolio() {
       setPersonalInfo(savedPersonalInfo ? JSON.parse(savedPersonalInfo) : defaultPersonalInfo)
       setEducation(savedEducation ? JSON.parse(savedEducation) : defaultEducation)
     } else {
+      // Pour le build statique (Vercel), utiliser les données par défaut mises à jour
       setProjects(defaultProjects)
       setSkills(defaultSkills)
       setPersonalInfo(defaultPersonalInfo)
