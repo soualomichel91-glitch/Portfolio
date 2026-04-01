@@ -91,9 +91,9 @@ export const defaultSkills: Skill[] = [
 export const defaultPersonalInfo: PersonalInfo = {
   name: "Soualo Michel",
   title: "Développeur Web Full Stack",
-  email: "contact@soualomichel.com",
-  phone: "+33 6 12 34 56 78",
-  location: "Paris, France",
+  email: "soualomichel91@gmail.com",
+  phone: "+224620157184",
+  location: "Conakry, Guinée",
   bio: "Passionné par le développement web depuis plusieurs années, je me spécialise dans la création d'applications modernes et performantes avec React, Next.js et Node.js. Toujours en veille technologique, j'aime relever de nouveaux défis techniques.",
   profilePhoto: ""
 }
