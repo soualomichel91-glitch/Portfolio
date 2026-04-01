@@ -224,7 +224,7 @@ export default function AdminPage() {
     setIsLoading(true)
     try {
       if (typeof window !== 'undefined') {
-        localStorage.setItem('personalInfo', JSON.stringify(localPersonalInfo))
+        localStorage.setItem('portfolio_personalInfo', JSON.stringify(localPersonalInfo))
         addNotification('Informations personnelles sauvegardées', 'success')
       }
     } catch (error) {
