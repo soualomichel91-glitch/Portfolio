@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Plus, Edit2, Trash2, Save, X, User, Briefcase, Award, Search, Download, Upload, Eye, EyeOff, Settings, LogOut, Menu, Github, ExternalLink } from 'lucide-react'
 import { usePortfolio } from '@/hooks/usePortfolio'
 import AdminParcours from '@/components/AdminParcours'
+import AdminSync from '@/components/AdminSync'
 
 interface Project {
   id: number
@@ -947,6 +948,8 @@ export default function AdminPage() {
           {activeTab === 'settings' && (
             <div className="space-y-6">
               <h2 className="text-xl font-semibold text-white mb-6">Paramètres</h2>
+              
+              <AdminSync />
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="card">

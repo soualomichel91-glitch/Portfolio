@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "sync-data": "node scripts/sync-data.js"
+    "sync-data": "node scripts/sync-data.js",
+    "sync-from-json": "node scripts/sync-from-json.js",
+    "build-sync": "npm run sync-from-json && npm run build"
   },
   "dependencies": {
     "html2canvas": "^1.4.1",
