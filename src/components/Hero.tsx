@@ -95,7 +95,7 @@ export default function Hero() {
         console.log('Section ABOUT terminée, yPosition:', yPosition)
         
         // Parcours - ORDRE SPÉCIFIQUE: professionnel, formations, universitaire, scolaire
-        const educationData = JSON.parse(localStorage.getItem('education') || '[]')
+        const educationData = JSON.parse(localStorage.getItem('portfolio_education') || '[]')
         console.log('Education data:', educationData) // Debug
         
         // Toujours afficher la section Parcours
@@ -170,7 +170,7 @@ export default function Hero() {
         console.log('Section PARCOURS terminée, yPosition:', yPosition)
         
         // Compétences
-        const skillsData = JSON.parse(localStorage.getItem('skills') || '[]')
+        const skillsData = JSON.parse(localStorage.getItem('portfolio_skills') || '[]')
         console.log('Skills data:', skillsData) // Debug
         
         // Toujours afficher la section Compétences
@@ -229,7 +229,7 @@ export default function Hero() {
         console.log('Section COMPÉTENCES terminée, yPosition:', yPosition)
         
         // Projets
-        const projectsData = JSON.parse(localStorage.getItem('projects') || '[]')
+        const projectsData = JSON.parse(localStorage.getItem('portfolio_projects') || '[]')
         console.log('Projects data:', projectsData) // Debug
         
         // Toujours afficher la section Projets
