@@ -59,7 +59,7 @@ export default function AdminCV() {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="space-y-4 md:col-span-1">
-            <div className="flex flex-col items-center px-6 pr-12">
+            <div className="flex flex-col items-center px-8">
               {localPersonalInfo.profilePhoto ? (
                 <div className="relative group">
                   <div className="w-32 h-32 bg-white rounded-lg p-3">
@@ -98,7 +98,7 @@ export default function AdminCV() {
             </p>
           </div>
 
-          <div className="space-y-4 md:col-span-2 pl-8">
+          <div className="space-y-4 md:col-span-2 pl-10">
             {/* Nom complet */}
             <div>
               <label className="block text-white font-medium mb-2">Nom complet</label>
