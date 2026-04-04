@@ -59,27 +59,29 @@ export default function AdminCV() {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-start">
               {localPersonalInfo.profilePhoto ? (
                 <div className="relative group">
-                  <img
-                    src={localPersonalInfo.profilePhoto}
-                    alt="Photo de profil"
-                    className="w-32 h-32 rounded-lg object-cover border-4 border-orange/20"
-                  />
+                  <div className="w-32 h-32 bg-white rounded-lg p-2">
+                    <img
+                      src={localPersonalInfo.profilePhoto}
+                      alt="Photo de profil"
+                      className="w-full h-full object-cover rounded"
+                    />
+                  </div>
                   <button
                     onClick={() => setLocalPersonalInfo({...localPersonalInfo, profilePhoto: ''})}
-                    className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                   >
                     <Upload size={16} />
                   </button>
                 </div>
               ) : (
                 <label className="cursor-pointer group">
-                  <div className="w-32 h-32 bg-gradient-to-br from-orange to-light-orange rounded-lg flex items-center justify-center border-4 border-orange/20 hover:border-orange/40 transition-all duration-200">
+                  <div className="w-32 h-32 bg-white rounded-lg p-2 flex items-center justify-center border-2 border-gray-300 hover:border-orange transition-all duration-200">
                     <div className="text-center">
-                      <Upload size={32} className="text-white mb-2" />
-                      <p className="text-white text-sm">Ajouter une photo</p>
+                      <Upload size={24} className="text-gray-400 mb-2" />
+                      <p className="text-gray-400 text-xs">Photo</p>
                     </div>
                   </div>
                   <input
@@ -322,11 +324,56 @@ export default function AdminCV() {
           Aperçu du CV
         </h3>
         <div className="bg-white/5 rounded-lg p-6 border border-white/10">
-          <div className="text-center text-light-blue mb-4">
+          <div className="text-center text-light-blue mb-6">
             <p className="font-medium">Votre CV sera généré avec le style bicolore moderne</p>
             <p className="text-sm mt-2">Colonne gauche : Photo, contact, langues, compétences</p>
             <p className="text-sm">Colonne droite : Expériences, formations, biographie</p>
           </div>
+          
+          {/* Aperçu miniature du style CV */}
+          <div className="flex justify-center mb-6">
+            <div className="relative w-64 h-36 bg-gray-100 rounded-lg overflow-hidden shadow-lg">
+              {/* Colonne gauche (noire) */}
+              <div className="absolute left-0 top-0 w-20 h-full bg-black flex flex-col items-center py-2">
+                {/* Photo sur le bord */}
+                <div className="w-12 h-12 bg-white rounded p-1 mb-2">
+                  {localPersonalInfo.profilePhoto ? (
+                    <img
+                      src={localPersonalInfo.profilePhoto}
+                      alt="Photo"
+                      className="w-full h-full object-cover rounded"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-300 rounded flex items-center justify-center">
+                      <span className="text-xs text-gray-600">SM</span>
+                    </div>
+                  )}
+                </div>
+                {/* Informations miniatures */}
+                <div className="text-white text-xs text-center px-1">
+                  <div className="w-1 h-1 bg-white rounded-full mx-auto mb-1"></div>
+                  <div className="w-1 h-1 bg-white rounded-full mx-auto mb-1"></div>
+                  <div className="w-1 h-1 bg-white rounded-full mx-auto mb-1"></div>
+                </div>
+              </div>
+              {/* Colonne droite (blanche) */}
+              <div className="absolute left-20 top-0 right-0 h-full bg-white p-2">
+                <div className="text-xs font-bold text-gray-800 mb-1">
+                  {localPersonalInfo.name || 'VOTRE NOM'}
+                </div>
+                <div className="text-xs text-gray-600 mb-1">
+                  {localPersonalInfo.title || 'Votre titre'}
+                </div>
+                <div className="w-full h-px bg-gray-300 mb-1"></div>
+                <div className="text-xs text-gray-700">
+                  <div className="w-full h-1 bg-gray-200 rounded mb-1"></div>
+                  <div className="w-full h-1 bg-gray-200 rounded mb-1"></div>
+                  <div className="w-3/4 h-1 bg-gray-200 rounded"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
           <div className="flex justify-center">
             <button
               onClick={() => window.open('/', '_blank')}
