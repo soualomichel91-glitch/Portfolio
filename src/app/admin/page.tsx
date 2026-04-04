@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Plus, Edit2, Trash2, Save, X, User, Briefcase, Award, Search, Download, Upload, Eye, EyeOff, Settings, LogOut, Menu, Github, ExternalLink } from 'lucide-react'
 import { usePortfolio } from '@/hooks/usePortfolio'
 import AdminParcours from '@/components/AdminParcours'
+import AdminCV from '@/components/AdminCV'
 import AdminSync from '@/components/AdminSync'
 
 interface Project {
@@ -37,7 +38,7 @@ interface Education {
 
 export default function AdminPage() {
   const { projects, skills, personalInfo, education, saveProjects, saveSkills, savePersonalInfo, saveEducation } = usePortfolio()
-  const [activeTab, setActiveTab] = useState<'projects' | 'skills' | 'info' | 'parcours' | 'settings'>('projects')
+  const [activeTab, setActiveTab] = useState<'projects' | 'skills' | 'info' | 'parcours' | 'cv' | 'settings'>('projects')
   const [isEditing, setIsEditing] = useState(false)
   const [editingItem, setEditingItem] = useState<any>(null)
   const [searchTerm, setSearchTerm] = useState('')
@@ -305,6 +306,7 @@ export default function AdminPage() {
             { id: 'projects', label: 'Projets', icon: Briefcase },
             { id: 'skills', label: 'Compétences', icon: Award },
             { id: 'parcours', label: 'Parcours', icon: User },
+            { id: 'cv', label: 'CV', icon: Download },
             { id: 'info', label: 'Informations', icon: User },
             { id: 'settings', label: 'Paramètres', icon: Settings }
           ].map(item => (
@@ -349,6 +351,7 @@ export default function AdminPage() {
                 {activeTab === 'projects' && 'Gestion des projets'}
                 {activeTab === 'skills' && 'Gestion des compétences'}
                 {activeTab === 'parcours' && 'Gestion du parcours'}
+                {activeTab === 'cv' && 'Gestion du CV'}
                 {activeTab === 'info' && 'Informations personnelles'}
                 {activeTab === 'settings' && 'Paramètres'}
               </h1>
@@ -634,6 +637,8 @@ export default function AdminPage() {
           )}
 
           {activeTab === 'parcours' && <AdminParcours />}
+
+          {activeTab === 'cv' && <AdminCV />}
 
           {activeTab === 'projects' && (
             <div className="space-y-6">

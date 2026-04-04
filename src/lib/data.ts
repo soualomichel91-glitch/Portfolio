@@ -28,6 +28,13 @@ export interface PersonalInfo {
     y: number
   }
   cvUrl?: string
+  website?: string
+  linkedin?: string
+  languages?: Array<{
+    name: string
+    level: string
+  }>
+  interests?: string[]
 }
 
 export interface Education {
