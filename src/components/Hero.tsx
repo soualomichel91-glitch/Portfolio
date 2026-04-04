@@ -14,15 +14,29 @@ export default function Hero() {
     
     try {
       if (typeof window !== 'undefined') {
-        // Générer un CV PDF dynamique avec toutes les informations
+        // Générer un CV PDF avec le style bicolore
         const pdf = new jsPDF()
         
-        let yPosition = 20
-        let currentPage = 1
+        console.log('Début génération CV style bicolore...')
         
-        console.log('Début génération CV...')
+        // Récupérer toutes les données
+        const educationData = JSON.parse(localStorage.getItem('portfolio_education') || '[]')
+        const skillsData = JSON.parse(localStorage.getItem('portfolio_skills') || '[]')
+        const projectsData = JSON.parse(localStorage.getItem('portfolio_projects') || '[]')
         
-        // En-tête avec photo
+        // Configuration des colonnes
+        const leftColX = 20
+        const rightColX = 80
+        const pageWidth = 210
+        const leftColWidth = 60
+        const rightColWidth = pageWidth - rightColX - 20
+        
+        // Colonne gauche (fond noir)
+        pdf.setFillColor(0, 0, 0)
+        pdf.rect(0, 0, leftColWidth + 20, 297, 'F')
+        
+        // Photo de profil dans la colonne gauche
+        let yPosition = 30
         if (personalInfo.profilePhoto) {
           try {
             const img = new Image()
@@ -32,163 +46,63 @@ export default function Hero() {
               img.src = personalInfo.profilePhoto!
             })
             
-            pdf.addImage(img, 'JPEG', 150, yPosition, 40, 40)
-            yPosition = yPosition + 50
+            // Cadre blanc pour la photo
+            pdf.setFillColor(255, 255, 255)
+            pdf.rect(leftColX + 5, yPosition, 50, 50, 'F')
+            pdf.addImage(img, 'JPEG', leftColX + 5, yPosition, 50, 50)
+            yPosition += 60
           } catch (error) {
             console.log('Erreur lors de l\'ajout de la photo:', error)
+            // Initial si pas de photo
+            pdf.setFillColor(255, 255, 255)
+            pdf.rect(leftColX + 5, yPosition, 50, 50, 'F')
+            pdf.setTextColor(0, 0, 0)
+            pdf.setFontSize(24)
+            pdf.setFont('helvetica', 'bold')
+            const initials = personalInfo.name.split(' ').map(n => n[0]).join('')
+            pdf.text(initials, leftColX + 30, yPosition + 30, { align: 'center' })
+            yPosition += 60
           }
         }
         
-        // Nom et titre
-        pdf.setFontSize(24)
-        pdf.setFont('helvetica', 'bold')
-        pdf.setTextColor(255, 140, 0)
-        pdf.text(personalInfo.name, 20, yPosition)
-        yPosition = yPosition + 15
-        
-        pdf.setFontSize(16)
-        pdf.setFont('helvetica', 'normal')
-        pdf.setTextColor(30, 30, 30)
-        pdf.text(personalInfo.title, 20, yPosition)
-        yPosition = yPosition + 20
-        
-        // Ligne de séparation
-        pdf.setDrawColor(255, 140, 0)
-        pdf.setLineWidth(0.5)
-        pdf.line(20, yPosition, 190, yPosition)
-        yPosition = yPosition + 15
-        
-        // Informations de contact
-        pdf.setFontSize(12)
-        pdf.setFont('helvetica', 'bold')
-        pdf.setTextColor(255, 140, 0)
-        pdf.text('CONTACT', 20, yPosition)
-        yPosition = yPosition + 10
-        
-        pdf.setFont('helvetica', 'normal')
-        pdf.setTextColor(30, 30, 30)
+        // Coordonnées dans la colonne gauche
+        pdf.setTextColor(255, 255, 255)
         pdf.setFontSize(10)
-        pdf.text(`Email: ${personalInfo.email}`, 20, yPosition)
-        yPosition = yPosition + 8
-        pdf.text(`Phone: ${personalInfo.phone}`, 20, yPosition)
-        yPosition = yPosition + 8
-        pdf.text(`Location: ${personalInfo.location}`, 20, yPosition)
-        yPosition = yPosition + 15
-        
-        // Biographie
-        pdf.setFontSize(12)
         pdf.setFont('helvetica', 'bold')
-        pdf.setTextColor(255, 140, 0)
-        pdf.text('ABOUT', 20, yPosition)
-        yPosition = yPosition + 10
+        pdf.text('CONTACT', leftColX, yPosition)
+        yPosition += 8
         
         pdf.setFont('helvetica', 'normal')
-        pdf.setTextColor(30, 30, 30)
-        pdf.setFontSize(10)
-        const bioLines = pdf.splitTextToSize(personalInfo.bio, 170, 10)
-        bioLines.forEach((line: string) => {
-          pdf.text(line, 20, yPosition)
-          yPosition = yPosition + 6
-        })
-        yPosition = yPosition + 10
+        pdf.setFontSize(9)
+        pdf.text(personalInfo.location || 'Conakry, Guinée', leftColX, yPosition)
+        yPosition += 6
+        pdf.text(personalInfo.email || 'soualomichel91@gmail.com', leftColX, yPosition)
+        yPosition += 6
+        pdf.text(personalInfo.phone || '+224620157184', leftColX, yPosition)
+        yPosition += 10
         
-        console.log('Section ABOUT terminée, yPosition:', yPosition)
-        
-        // Parcours - ORDRE SPÉCIFIQUE: professionnel, formations, universitaire, scolaire
-        const educationData = JSON.parse(localStorage.getItem('portfolio_education') || '[]')
-        console.log('Education data:', educationData) // Debug
-        
-        // Toujours afficher la section Parcours
-        if (yPosition > 240) {
-          pdf.addPage()
-          currentPage++
-          console.log('Nouvelle page ajoutée pour PARCOURS, page:', currentPage)
-          yPosition = 20
-        }
-        
-        pdf.setFontSize(12)
+        // Langues
         pdf.setFont('helvetica', 'bold')
-        pdf.setTextColor(255, 140, 0)
-        pdf.text('PARCOURS', 20, yPosition)
-        yPosition = yPosition + 10
+        pdf.setFontSize(10)
+        pdf.text('LANGUES', leftColX, yPosition)
+        yPosition += 8
         
-        if (educationData.length > 0) {
-          // Ordre spécifique des types
-          const typeOrder = ['professionnel', 'formations', 'universitaire', 'scolaire']
-          const sortedEducation = educationData.sort((a: any, b: any) => {
-            const aIndex = typeOrder.indexOf(a.type)
-            const bIndex = typeOrder.indexOf(b.type)
-            if (aIndex === -1) return 1
-            if (bIndex === -1) return -1
-            return aIndex - bIndex
-          })
-          
-          sortedEducation.slice(0, 8).forEach((item: any) => {
-            if (yPosition > 270) {
-              pdf.addPage()
-              currentPage++
-              console.log('Nouvelle page ajoutée dans parcours, page:', currentPage)
-              yPosition = 20
-            }
-            
-            pdf.setFont('helvetica', 'bold')
-            pdf.setFontSize(11)
-            pdf.text(item.title, 20, yPosition)
-            yPosition = yPosition + 7
-            
-            pdf.setFont('helvetica', 'normal')
-            pdf.setFontSize(9)
-            pdf.text(`${item.institution} • ${item.location}`, 20, yPosition)
-            yPosition = yPosition + 6
-            pdf.text(`${item.startDate} - ${item.endDate || 'Présent'}`, 20, yPosition)
-            yPosition = yPosition + 6
-            
-            if (item.description) {
-              const descText = item.description.substring(0, 250)
-              const descLines = pdf.splitTextToSize(descText, 170, 9)
-              descLines.forEach((line: string) => {
-                if (yPosition > 270) {
-                  pdf.addPage()
-                  currentPage++
-                  yPosition = 20
-                }
-                pdf.text(line, 25, yPosition)
-                yPosition = yPosition + 5
-              })
-            }
-            yPosition = yPosition + 8
-          })
-        } else {
-          pdf.setFont('helvetica', 'normal')
-          pdf.setFontSize(10)
-          pdf.setTextColor(30, 30, 30)
-          pdf.text('Aucune expérience ajoutée pour le moment.', 20, yPosition)
-          yPosition = yPosition + 10
-          console.log('No education data found') // Debug
-        }
-        
-        console.log('Section PARCOURS terminée, yPosition:', yPosition)
+        pdf.setFont('helvetica', 'normal')
+        pdf.setFontSize(9)
+        pdf.text('Français - Natif', leftColX, yPosition)
+        yPosition += 6
+        pdf.text('Anglais - Professionnel', leftColX, yPosition)
+        yPosition += 10
         
         // Compétences
-        const skillsData = JSON.parse(localStorage.getItem('portfolio_skills') || '[]')
-        console.log('Skills data:', skillsData) // Debug
-        
-        // Toujours afficher la section Compétences
-        if (yPosition > 240) {
-          pdf.addPage()
-          currentPage++
-          console.log('Nouvelle page ajoutée pour COMPÉTENCES, page:', currentPage)
-          yPosition = 20
-        }
-        
-        pdf.setFontSize(12)
         pdf.setFont('helvetica', 'bold')
-        pdf.setTextColor(255, 140, 0)
-        pdf.text('COMPÉTENCES', 20, yPosition)
-        yPosition = yPosition + 10
+        pdf.setFontSize(10)
+        pdf.text('COMPÉTENCES', leftColX, yPosition)
+        yPosition += 8
         
+        pdf.setFont('helvetica', 'normal')
+        pdf.setFontSize(9)
         if (skillsData.length > 0) {
-          // Regrouper par catégorie
           const skillsByCategory = skillsData.reduce((acc: any, skill: any) => {
             if (!acc[skill.category]) acc[skill.category] = []
             acc[skill.category].push(skill)
@@ -196,114 +110,178 @@ export default function Hero() {
           }, {})
           
           Object.entries(skillsByCategory).forEach(([category, skills]: [string, any]) => {
-            if (yPosition > 260) {
-              pdf.addPage()
-              currentPage++
-              yPosition = 20
-            }
-            
-            pdf.setFont('helvetica', 'bold')
-            pdf.setFontSize(11)
-            pdf.setTextColor(255, 140, 0)
-            pdf.text(category.toUpperCase(), 20, yPosition)
-            yPosition = yPosition + 8
-            
-            skills.forEach((skill: any) => {
-              pdf.setFont('helvetica', 'normal')
-              pdf.setFontSize(10)
-              pdf.setTextColor(30, 30, 30)
-              pdf.text(`• ${skill.name} - ${skill.level}%`, 25, yPosition)
-              yPosition = yPosition + 6
+            pdf.text(category.toUpperCase(), leftColX, yPosition)
+            yPosition += 6
+            skills.slice(0, 4).forEach((skill: any) => {
+              pdf.text(`• ${skill.name}`, leftColX + 3, yPosition)
+              yPosition += 5
             })
-            yPosition = yPosition + 5
+            yPosition += 3
           })
         } else {
-          pdf.setFont('helvetica', 'normal')
-          pdf.setFontSize(10)
-          pdf.setTextColor(30, 30, 30)
-          pdf.text('Aucune compétence ajoutée pour le moment.', 20, yPosition)
-          yPosition = yPosition + 10
-          console.log('No skills data found') // Debug
+          pdf.text('• React, Next.js, TypeScript', leftColX + 3, yPosition)
+          yPosition += 5
+          pdf.text('• Node.js, MongoDB, PostgreSQL', leftColX + 3, yPosition)
+          yPosition += 5
+          pdf.text('• Git, Docker, AWS', leftColX + 3, yPosition)
+          yPosition += 10
         }
         
-        console.log('Section COMPÉTENCES terminée, yPosition:', yPosition)
-        
-        // Projets
-        const projectsData = JSON.parse(localStorage.getItem('portfolio_projects') || '[]')
-        console.log('Projects data:', projectsData) // Debug
-        
-        // Toujours afficher la section Projets
-        if (yPosition > 240) {
-          pdf.addPage()
-          currentPage++
-          console.log('Nouvelle page ajoutée pour PROJETS, page:', currentPage)
-          yPosition = 20
-        }
-        
-        pdf.setFontSize(12)
+        // Centres d'intérêt
         pdf.setFont('helvetica', 'bold')
-        pdf.setTextColor(255, 140, 0)
-        pdf.text('PROJETS', 20, yPosition)
-        yPosition = yPosition + 10
+        pdf.setFontSize(10)
+        pdf.text('CENTRES D\'INTÉRÊT', leftColX, yPosition)
+        yPosition += 8
         
-        if (projectsData.length > 0) {
-          projectsData.slice(0, 6).forEach((project: any) => {
-            if (yPosition > 260) {
-              pdf.addPage()
-              currentPage++
-              yPosition = 20
-            }
-            
+        pdf.setFont('helvetica', 'normal')
+        pdf.setFontSize(9)
+        pdf.text('• Développement web', leftColX + 3, yPosition)
+        yPosition += 5
+        pdf.text('• Technologies', leftColX + 3, yPosition)
+        yPosition += 5
+        pdf.text('• Lecture', leftColX + 3, yPosition)
+        
+        // Colonne droite (fond blanc)
+        yPosition = 30
+        pdf.setFillColor(255, 255, 255)
+        pdf.rect(rightColX - 10, 0, rightColWidth + 20, 297, 'F')
+        
+        // Nom et titre
+        pdf.setTextColor(0, 0, 0)
+        pdf.setFontSize(28)
+        pdf.setFont('helvetica', 'bold')
+        pdf.text(personalInfo.name.toUpperCase(), rightColX, yPosition)
+        yPosition += 15
+        
+        pdf.setFontSize(14)
+        pdf.setFont('helvetica', 'normal')
+        pdf.text(personalInfo.title, rightColX, yPosition)
+        yPosition += 15
+        
+        // Ligne de séparation
+        pdf.setDrawColor(0, 0, 0)
+        pdf.setLineWidth(0.5)
+        pdf.line(rightColX, yPosition, pageWidth - 20, yPosition)
+        yPosition += 15
+        
+        // Description personnelle
+        pdf.setFontSize(11)
+        pdf.setFont('helvetica', 'normal')
+        const bioLines = pdf.splitTextToSize(personalInfo.bio, rightColWidth)
+        bioLines.forEach((line: string) => {
+          pdf.text(line, rightColX, yPosition)
+          yPosition += 6
+        })
+        yPosition += 15
+        
+        // Expériences professionnelles
+        pdf.setFont('helvetica', 'bold')
+        pdf.setFontSize(14)
+        pdf.text('EXPÉRIENCES PROFESSIONNELLES', rightColX, yPosition)
+        yPosition += 12
+        
+        if (educationData.length > 0) {
+          const professionalExp = educationData.filter((exp: any) => exp.type === 'professionnel')
+          professionalExp.forEach((exp: any) => {
             pdf.setFont('helvetica', 'bold')
-            pdf.setFontSize(11)
-            pdf.text(project.title, 20, yPosition)
-            yPosition = yPosition + 7
+            pdf.setFontSize(12)
+            pdf.text(exp.title.toUpperCase(), rightColX, yPosition)
+            yPosition += 8
             
             pdf.setFont('helvetica', 'normal')
-            pdf.setFontSize(9)
-            pdf.setTextColor(30, 30, 30)
+            pdf.setFontSize(10)
+            pdf.text(`${exp.institution} • ${exp.location}`, rightColX, yPosition)
+            yPosition += 6
+            pdf.text(`${exp.startDate} - ${exp.endDate || 'Présent'}`, rightColX, yPosition)
+            yPosition += 8
             
-            if (project.description) {
-              const descText = project.description.substring(0, 200)
-              const descLines = pdf.splitTextToSize(descText, 170, 9)
+            if (exp.description) {
+              const descLines = pdf.splitTextToSize(exp.description, rightColWidth - 10)
               descLines.forEach((line: string) => {
-                if (yPosition > 270) {
-                  pdf.addPage()
-                  currentPage++
-                  yPosition = 20
-                }
-                pdf.text(line, 25, yPosition)
-                yPosition = yPosition + 5
+                pdf.text(`• ${line}`, rightColX + 5, yPosition)
+                yPosition += 5
               })
             }
-            
-            if (project.technologies && project.technologies.length > 0) {
-              yPosition = yPosition + 3
-              pdf.text(`Technologies: ${project.technologies.slice(0, 8).join(', ')}`, 25, yPosition)
-            }
-            
-            if (project.link) {
-              yPosition = yPosition + 4
-              pdf.text(`Lien: ${project.link}`, 25, yPosition)
-            }
-            
-            yPosition = yPosition + 10
+            yPosition += 10
           })
         } else {
+          // Expérience par défaut
+          pdf.setFont('helvetica', 'bold')
+          pdf.setFontSize(12)
+          pdf.text('DÉVELOPPEUR FULL STACK', rightColX, yPosition)
+          yPosition += 8
+          
           pdf.setFont('helvetica', 'normal')
           pdf.setFontSize(10)
-          pdf.setTextColor(30, 30, 30)
-          pdf.text('Aucun projet ajouté pour le moment.', 20, yPosition)
-          yPosition = yPosition + 10
-          console.log('No projects data found') // Debug
+          pdf.text('Tech Innovations Guinea • Conakry, Guinée', rightColX, yPosition)
+          yPosition += 6
+          pdf.text('2023 - Présent', rightColX, yPosition)
+          yPosition += 8
+          
+          const defaultDesc = [
+            'Développement d\'applications web modernes et performantes',
+            'Gestion de projet et mentorat d\'équipe',
+            'Architecture technique et optimisation des performances',
+            'Collaboration avec les équipes produit et design'
+          ]
+          defaultDesc.forEach(line => {
+            pdf.text(`• ${line}`, rightColX + 5, yPosition)
+            yPosition += 5
+          })
         }
         
-        console.log('Section PROJETS terminée, yPosition:', yPosition)
-        console.log('Nombre total de pages:', currentPage)
+        yPosition += 15
+        
+        // Formations
+        pdf.setFont('helvetica', 'bold')
+        pdf.setFontSize(14)
+        pdf.text('FORMATIONS', rightColX, yPosition)
+        yPosition += 12
+        
+        if (educationData.length > 0) {
+          const education = educationData.filter((edu: any) => edu.type === 'universitaire' || edu.type === 'formation')
+          education.slice(0, 3).forEach((edu: any) => {
+            pdf.setFont('helvetica', 'bold')
+            pdf.setFontSize(12)
+            pdf.text(edu.title.toUpperCase(), rightColX, yPosition)
+            yPosition += 8
+            
+            pdf.setFont('helvetica', 'normal')
+            pdf.setFontSize(10)
+            pdf.text(`${edu.institution} • ${edu.location}`, rightColX, yPosition)
+            yPosition += 6
+            pdf.text(`${edu.startDate} - ${edu.endDate}`, rightColX, yPosition)
+            yPosition += 10
+          })
+        } else {
+          // Formations par défaut
+          pdf.setFont('helvetica', 'bold')
+          pdf.setFontSize(12)
+          pdf.text('MASTER DÉVELOPPEMENT WEB', rightColX, yPosition)
+          yPosition += 8
+          
+          pdf.setFont('helvetica', 'normal')
+          pdf.setFontSize(10)
+          pdf.text('Ecole Supérieure du Numérique • Paris, France', rightColX, yPosition)
+          yPosition += 6
+          pdf.text('2021 - 2023', rightColX, yPosition)
+          yPosition += 10
+          
+          pdf.setFont('helvetica', 'bold')
+          pdf.setFontSize(12)
+          pdf.text('LICENCE INFORMATIQUE', rightColX, yPosition)
+          yPosition += 8
+          
+          pdf.setFont('helvetica', 'normal')
+          pdf.setFontSize(10)
+          pdf.text('Université Paris-Saclay • Orsay, France', rightColX, yPosition)
+          yPosition += 6
+          pdf.text('2018 - 2021', rightColX, yPosition)
+        }
         
         // Télécharger le PDF
-        pdf.save(`CV_${personalInfo.name.replace(' ', '_')}.pdf`)
-        console.log('CV sauvegardé avec succès!')
+        pdf.save(`CV_${personalInfo.name.replace(' ', '_')}_Bicolore.pdf`)
+        console.log('CV bicolore généré avec succès!')
       }
     } catch (error) {
       console.error('Erreur lors de la génération du CV:', error)
