@@ -59,10 +59,10 @@ export default function AdminCV() {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
-            <div className="flex flex-col items-start">
+            <div className="flex flex-col items-center px-4">
               {localPersonalInfo.profilePhoto ? (
                 <div className="relative group">
-                  <div className="w-32 h-32 bg-white rounded-lg p-2">
+                  <div className="w-32 h-32 bg-white rounded-lg p-3">
                     <img
                       src={localPersonalInfo.profilePhoto}
                       alt="Photo de profil"
@@ -78,7 +78,7 @@ export default function AdminCV() {
                 </div>
               ) : (
                 <label className="cursor-pointer group">
-                  <div className="w-32 h-32 bg-white rounded-lg p-2 flex items-center justify-center border-2 border-gray-300 hover:border-orange transition-all duration-200">
+                  <div className="w-32 h-32 bg-white rounded-lg p-3 flex items-center justify-center border-2 border-gray-300 hover:border-orange transition-all duration-200">
                     <div className="text-center">
                       <Upload size={24} className="text-gray-400 mb-2" />
                       <p className="text-gray-400 text-xs">Photo</p>
@@ -334,9 +334,9 @@ export default function AdminCV() {
           <div className="flex justify-center mb-6">
             <div className="relative w-64 h-36 bg-gray-100 rounded-lg overflow-hidden shadow-lg">
               {/* Colonne gauche (noire) */}
-              <div className="absolute left-0 top-0 w-20 h-full bg-black flex flex-col items-center py-2">
-                {/* Photo sur le bord */}
-                <div className="w-12 h-12 bg-white rounded p-1 mb-2">
+              <div className="absolute left-0 top-0 w-20 h-full bg-black flex flex-col items-center py-2 px-1">
+                {/* Photo avec espaces */}
+                <div className="w-12 h-12 bg-white rounded p-1.5 mb-2">
                   {localPersonalInfo.profilePhoto ? (
                     <img
                       src={localPersonalInfo.profilePhoto}
