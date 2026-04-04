@@ -320,15 +320,7 @@ export default function Hero() {
       
       <div className="container mx-auto px-6 relative z-10 mt-8">
         <div className="text-center">
-          {/* Profile image with animation */}
-          <div className="mb-8 animate-fade-in-up">
-            <div className="w-32 h-32 mx-auto relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-orange to-light-orange rounded-full animate-pulse"></div>
-              <div className="relative w-full h-full bg-white rounded-full flex items-center justify-center">
-                <span className="text-3xl font-bold text-orange">SM</span>
-              </div>
-            </div>
-          </div>
+
           
           {/* Main content */}
           <div className="animate-fade-in-up delay-200">
@@ -339,10 +331,7 @@ export default function Hero() {
               {personalInfo.title}
             </p>
             
-            {/* Description */}
-            <p className="text-lg text-white/80 mb-12 max-w-2xl mx-auto leading-relaxed">
-              {personalInfo.bio}
-            </p>
+
             
             {/* CTA buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
