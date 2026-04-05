@@ -30,13 +30,42 @@ export default function Hero() {
         const pageWidth = 210
         const leftColWidth = 60
         const rightColWidth = pageWidth - rightColX - 20
+        const pageHeight = 297
+        const margin = 20
+        
+        let currentPage = 1
+        let yPosition = 30
+        
+        // Fonction pour ajouter une nouvelle page si nécessaire
+        const checkAndAddPage = (requiredHeight: number) => {
+          if (yPosition + requiredHeight > pageHeight - margin) {
+            pdf.addPage()
+            currentPage++
+            yPosition = 30
+            
+            // Redessiner les colonnes pour la nouvelle page
+            pdf.setFillColor(0, 0, 0)
+            pdf.rect(0, 0, leftColWidth + 20, pageHeight, 'F')
+            
+            pdf.setFillColor(255, 255, 255)
+            pdf.rect(rightColX - 10, 0, rightColWidth + 20, pageHeight, 'F')
+            
+            // Numéro de page
+            pdf.setTextColor(128, 128, 128)
+            pdf.setFontSize(8)
+            pdf.setFont('helvetica', 'normal')
+            pdf.text(`Page ${currentPage}`, pageWidth / 2, pageHeight - 10, { align: 'center' })
+            
+            return true
+          }
+          return false
+        }
         
         // Colonne gauche (fond noir)
         pdf.setFillColor(0, 0, 0)
-        pdf.rect(0, 0, leftColWidth + 20, 297, 'F')
+        pdf.rect(0, 0, leftColWidth + 20, pageHeight, 'F')
         
         // Photo de profil dans la colonne gauche
-        let yPosition = 30
         if (personalInfo.profilePhoto) {
           try {
             const img = new Image()
@@ -79,6 +108,16 @@ export default function Hero() {
         pdf.text(personalInfo.email || 'soualomichel91@gmail.com', leftColX, yPosition)
         yPosition += 6
         pdf.text(personalInfo.phone || '+224620157184', leftColX, yPosition)
+        
+        // Site web et LinkedIn si disponibles
+        if (personalInfo.website) {
+          yPosition += 6
+          pdf.text(personalInfo.website, leftColX, yPosition)
+        }
+        if (personalInfo.linkedin) {
+          yPosition += 6
+          pdf.text(personalInfo.linkedin, leftColX, yPosition)
+        }
         yPosition += 10
         
         // Langues
@@ -89,9 +128,16 @@ export default function Hero() {
         
         pdf.setFont('helvetica', 'normal')
         pdf.setFontSize(9)
-        pdf.text('Français - Natif', leftColX, yPosition)
-        yPosition += 6
-        pdf.text('Anglais - Professionnel', leftColX, yPosition)
+        if (personalInfo.languages && personalInfo.languages.length > 0) {
+          personalInfo.languages.forEach((lang: any) => {
+            pdf.text(`${lang.name} - ${lang.level}`, leftColX, yPosition)
+            yPosition += 6
+          })
+        } else {
+          pdf.text('Français - Natif', leftColX, yPosition)
+          yPosition += 6
+          pdf.text('Anglais - Professionnel', leftColX, yPosition)
+        }
         yPosition += 10
         
         // Compétences
@@ -124,7 +170,6 @@ export default function Hero() {
           pdf.text('• Node.js, MongoDB, PostgreSQL', leftColX + 3, yPosition)
           yPosition += 5
           pdf.text('• Git, Docker, AWS', leftColX + 3, yPosition)
-          yPosition += 10
         }
         
         // Centres d'intérêt
@@ -135,16 +180,23 @@ export default function Hero() {
         
         pdf.setFont('helvetica', 'normal')
         pdf.setFontSize(9)
-        pdf.text('• Développement web', leftColX + 3, yPosition)
-        yPosition += 5
-        pdf.text('• Technologies', leftColX + 3, yPosition)
-        yPosition += 5
-        pdf.text('• Lecture', leftColX + 3, yPosition)
+        if (personalInfo.interests && personalInfo.interests.length > 0) {
+          personalInfo.interests.forEach((interest: string) => {
+            pdf.text(`• ${interest}`, leftColX + 3, yPosition)
+            yPosition += 5
+          })
+        } else {
+          pdf.text('• Développement web', leftColX + 3, yPosition)
+          yPosition += 5
+          pdf.text('• Technologies', leftColX + 3, yPosition)
+          yPosition += 5
+          pdf.text('• Lecture', leftColX + 3, yPosition)
+        }
         
         // Colonne droite (fond blanc)
         yPosition = 30
         pdf.setFillColor(255, 255, 255)
-        pdf.rect(rightColX - 10, 0, rightColWidth + 20, 297, 'F')
+        pdf.rect(rightColX - 10, 0, rightColWidth + 20, pageHeight, 'F')
         
         // Nom et titre
         pdf.setTextColor(0, 0, 0)
@@ -175,6 +227,7 @@ export default function Hero() {
         yPosition += 15
         
         // Expériences professionnelles
+        checkAndAddPage(40)
         pdf.setFont('helvetica', 'bold')
         pdf.setFontSize(14)
         pdf.text('EXPÉRIENCES PROFESSIONNELLES', rightColX, yPosition)
@@ -183,6 +236,8 @@ export default function Hero() {
         if (educationData.length > 0) {
           const professionalExp = educationData.filter((exp: any) => exp.type === 'professionnel')
           professionalExp.forEach((exp: any) => {
+            checkAndAddPage(30 + (exp.description ? 20 : 0))
+            
             pdf.setFont('helvetica', 'bold')
             pdf.setFontSize(12)
             pdf.text(exp.title.toUpperCase(), rightColX, yPosition)
@@ -233,6 +288,7 @@ export default function Hero() {
         yPosition += 15
         
         // Formations
+        checkAndAddPage(40)
         pdf.setFont('helvetica', 'bold')
         pdf.setFontSize(14)
         pdf.text('FORMATIONS', rightColX, yPosition)
@@ -240,7 +296,9 @@ export default function Hero() {
         
         if (educationData.length > 0) {
           const education = educationData.filter((edu: any) => edu.type === 'universitaire' || edu.type === 'formation')
-          education.slice(0, 3).forEach((edu: any) => {
+          education.forEach((edu: any) => {
+            checkAndAddPage(25)
+            
             pdf.setFont('helvetica', 'bold')
             pdf.setFontSize(12)
             pdf.text(edu.title.toUpperCase(), rightColX, yPosition)
@@ -279,9 +337,67 @@ export default function Hero() {
           pdf.text('2018 - 2021', rightColX, yPosition)
         }
         
+        yPosition += 15
+        
+        // Projets (nouvelle section)
+        if (projectsData.length > 0) {
+          checkAndAddPage(40)
+          pdf.setFont('helvetica', 'bold')
+          pdf.setFontSize(14)
+          pdf.text('PROJETS NOTABLES', rightColX, yPosition)
+          yPosition += 12
+          
+          projectsData.slice(0, 5).forEach((project: any) => {
+            checkAndAddPage(35)
+            
+            pdf.setFont('helvetica', 'bold')
+            pdf.setFontSize(12)
+            pdf.text(project.title.toUpperCase(), rightColX, yPosition)
+            yPosition += 8
+            
+            pdf.setFont('helvetica', 'normal')
+            pdf.setFontSize(10)
+            
+            // Technologies
+            if (project.technologies && project.technologies.length > 0) {
+              pdf.text(`Technologies: ${project.technologies.join(', ')}`, rightColX, yPosition)
+              yPosition += 6
+            }
+            
+            // Description
+            if (project.description) {
+              const descLines = pdf.splitTextToSize(project.description, rightColWidth - 10)
+              descLines.forEach((line: string) => {
+                pdf.text(`• ${line}`, rightColX + 5, yPosition)
+                yPosition += 5
+              })
+            }
+            
+            // Liens
+            if (project.github || project.demo) {
+              yPosition += 3
+              if (project.github) {
+                pdf.text(`GitHub: ${project.github}`, rightColX, yPosition)
+                yPosition += 5
+              }
+              if (project.demo) {
+                pdf.text(`Demo: ${project.demo}`, rightColX, yPosition)
+                yPosition += 5
+              }
+            }
+            yPosition += 10
+          })
+        }
+        
+        // Numéro de page sur la première page
+        pdf.setTextColor(128, 128, 128)
+        pdf.setFontSize(8)
+        pdf.setFont('helvetica', 'normal')
+        pdf.text(`Page ${currentPage}`, pageWidth / 2, pageHeight - 10, { align: 'center' })
+        
         // Télécharger le PDF
-        pdf.save(`CV_${personalInfo.name.replace(' ', '_')}_Bicolore.pdf`)
-        console.log('CV bicolore généré avec succès!')
+        pdf.save(`CV_${personalInfo.name.replace(' ', '_')}_Complet.pdf`)
+        console.log('CV complet généré avec succès!')
       }
     } catch (error) {
       console.error('Erreur lors de la génération du CV:', error)
