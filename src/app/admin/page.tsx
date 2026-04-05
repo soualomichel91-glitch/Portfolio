@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { Plus, Edit2, Trash2, Save, X, User, Briefcase, Award, Search, Download, Upload, Eye, EyeOff, Settings, LogOut, Menu, Github, ExternalLink } from 'lucide-react'
 import { usePortfolio } from '@/hooks/usePortfolio'
+import { SyncNotificationContainer } from '@/components/SyncNotification'
+import { useSyncNotification } from '@/hooks/useSyncNotification'
 import AdminParcours from '@/components/AdminParcours'
 import AdminCV from '@/components/AdminCV'
 import AdminSync from '@/components/AdminSync'
@@ -38,12 +40,12 @@ interface Education {
 
 export default function AdminPage() {
   const { projects, skills, personalInfo, education, saveProjects, saveSkills, savePersonalInfo, saveEducation } = usePortfolio()
+  const { notifications, showNotification, hideNotification } = useSyncNotification()
   const [activeTab, setActiveTab] = useState<'projects' | 'skills' | 'info' | 'parcours' | 'cv' | 'settings'>('projects')
   const [isEditing, setIsEditing] = useState(false)
   const [editingItem, setEditingItem] = useState<any>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [notifications, setNotifications] = useState<{id: string; message: string; type: 'success' | 'error' | 'info'}[]>([])
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [darkMode, setDarkMode] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
@@ -71,13 +73,7 @@ export default function AdminPage() {
     }
   }, [projects, skills, personalInfo, education])
 
-  const addNotification = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
-    const id = Date.now().toString()
-    setNotifications(prev => [...prev, { id, message, type }])
-    setTimeout(() => {
-      setNotifications(prev => prev.filter(n => n.id !== id))
-    }, 5000)
-  }
+  // Le système de notifications est maintenant géré par useSyncNotification()
 
   const handleSaveProject = async () => {
     setIsLoading(true)
@@ -86,18 +82,18 @@ export default function AdminPage() {
         const updated = localProjects.map(p => p.id === editingItem.id ? editingItem : p)
         setLocalProjects(updated)
         await saveProjects(updated)
-        addNotification('Projet mis à jour avec succès', 'success')
+        showNotification('Projet mis à jour avec succès', 'success')
       } else {
         const newProject = { ...editingItem, id: Date.now() }
         const updated = [...localProjects, newProject]
         setLocalProjects(updated)
         await saveProjects(updated)
-        addNotification('Projet ajouté avec succès', 'success')
+        showNotification('Projet ajouté avec succès', 'success')
       }
       setIsEditing(false)
       setEditingItem(null)
     } catch (error) {
-      addNotification('Erreur lors de la sauvegarde', 'error')
+      showNotification('Erreur lors de la sauvegarde', 'error')
     } finally {
       setIsLoading(false)
     }
@@ -111,9 +107,9 @@ export default function AdminPage() {
       const updated = localProjects.filter(p => p.id !== id)
       setLocalProjects(updated)
       await saveProjects(updated)
-      addNotification('Projet supprimé avec succès', 'success')
+      showNotification('Projet supprimé avec succès', 'success')
     } catch (error) {
-      addNotification('Erreur lors de la suppression', 'error')
+      showNotification('Erreur lors de la suppression', 'error')
     } finally {
       setIsLoading(false)
     }
@@ -126,18 +122,18 @@ export default function AdminPage() {
         const updated = localSkills.map(s => s.id === editingItem.id ? editingItem : s)
         setLocalSkills(updated)
         await saveSkills(updated)
-        addNotification('Compétence mise à jour avec succès', 'success')
+        showNotification('Compétence mise à jour avec succès', 'success')
       } else {
         const newSkill = { ...editingItem, id: Date.now() }
         const updated = [...localSkills, newSkill]
         setLocalSkills(updated)
         await saveSkills(updated)
-        addNotification('Compétence ajoutée avec succès', 'success')
+        showNotification('Compétence ajoutée avec succès', 'success')
       }
       setIsEditing(false)
       setEditingItem(null)
     } catch (error) {
-      addNotification('Erreur lors de la sauvegarde', 'error')
+      showNotification('Erreur lors de la sauvegarde', 'error')
     } finally {
       setIsLoading(false)
     }
@@ -151,9 +147,9 @@ export default function AdminPage() {
       const updated = localSkills.filter(s => s.id !== id)
       setLocalSkills(updated)
       await saveSkills(updated)
-      addNotification('Compétence supprimée avec succès', 'success')
+      showNotification('Compétence supprimée avec succès', 'success')
     } catch (error) {
-      addNotification('Erreur lors de la suppression', 'error')
+      showNotification('Erreur lors de la suppression', 'error')
     } finally {
       setIsLoading(false)
     }
@@ -166,18 +162,18 @@ export default function AdminPage() {
         const updated = localEducation.map(e => e.id === editingItem.id ? editingItem : e)
         setLocalEducation(updated)
         await saveEducation(updated)
-        addNotification('Parcours mis à jour avec succès', 'success')
+        showNotification('Parcours mis à jour avec succès', 'success')
       } else {
         const newEducation = { ...editingItem, id: Date.now() }
         const updated = [...localEducation, newEducation]
         setLocalEducation(updated)
         await saveEducation(updated)
-        addNotification('Parcours ajouté avec succès', 'success')
+        showNotification('Parcours ajouté avec succès', 'success')
       }
       setIsEditing(false)
       setEditingItem(null)
     } catch (error) {
-      addNotification('Erreur lors de la sauvegarde', 'error')
+      showNotification('Erreur lors de la sauvegarde', 'error')
     } finally {
       setIsLoading(false)
     }
@@ -191,9 +187,9 @@ export default function AdminPage() {
       const updated = localEducation.filter(e => e.id !== id)
       setLocalEducation(updated)
       await saveEducation(updated)
-      addNotification('Parcours supprimé avec succès', 'success')
+      showNotification('Parcours supprimé avec succès', 'success')
     } catch (error) {
-      addNotification('Erreur lors de la suppression', 'error')
+      showNotification('Erreur lors de la suppression', 'error')
     } finally {
       setIsLoading(false)
     }
@@ -217,7 +213,7 @@ export default function AdminPage() {
       a.click()
       URL.revokeObjectURL(url)
       document.body.removeChild(a)
-      addNotification('Données exportées avec succès', 'success')
+      showNotification('Données exportées avec succès', 'success')
     }
   }
 
@@ -226,10 +222,10 @@ export default function AdminPage() {
     try {
       if (typeof window !== 'undefined') {
         localStorage.setItem('portfolio_personalInfo', JSON.stringify(localPersonalInfo))
-        addNotification('Informations personnelles sauvegardées', 'success')
+        showNotification('Informations personnelles sauvegardées', 'success')
       }
     } catch (error) {
-      addNotification('Erreur lors de la sauvegarde', 'error')
+      showNotification('Erreur lors de la sauvegarde', 'error')
     } finally {
       setIsLoading(false)
     }
@@ -237,7 +233,7 @@ export default function AdminPage() {
 
   const resetPhotoPosition = () => {
     setPhotoPosition({ scale: 1, x: 0, y: 0 })
-    addNotification('Position de la photo réinitialisée', 'info')
+    showNotification('Position de la photo réinitialisée', 'info')
   }
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -259,11 +255,11 @@ export default function AdminPage() {
       reader.onload = (event) => {
         const cvUrl = event.target?.result as string
         setLocalPersonalInfo({...localPersonalInfo, cvUrl: cvUrl})
-        addNotification('CV uploadé avec succès', 'success')
+        showNotification('CV uploadé avec succès', 'success')
       }
       reader.readAsDataURL(file)
     } else {
-      addNotification('Veuillez sélectionner un fichier PDF', 'error')
+      showNotification('Veuillez sélectionner un fichier PDF', 'error')
     }
   }
 
@@ -996,6 +992,7 @@ export default function AdminPage() {
             </div>
           )}
         </main>
+      <SyncNotificationContainer notifications={notifications} onHide={hideNotification} />
       </div>
     </div>
   )
