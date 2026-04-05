@@ -43,12 +43,77 @@ export default function Hero() {
             currentPage++
             yPosition = 30
             
-            // Redessiner les colonnes pour la nouvelle page
+            // Redessiner complètement les colonnes pour la nouvelle page
             pdf.setFillColor(0, 0, 0)
             pdf.rect(0, 0, leftColWidth + 20, pageHeight, 'F')
             
             pdf.setFillColor(255, 255, 255)
             pdf.rect(rightColX - 10, 0, rightColWidth + 20, pageHeight, 'F')
+            
+            // Redessiner le contenu de la colonne gauche sur la nouvelle page
+            let leftY = 30
+            
+            // Photo sur les pages suivantes (plus petite)
+            if (personalInfo.profilePhoto && currentPage > 1) {
+              pdf.setFillColor(255, 255, 255)
+              pdf.rect(leftColX + 10, leftY, 40, 40, 'F')
+              pdf.setTextColor(0, 0, 0)
+              pdf.setFontSize(16)
+              pdf.setFont('helvetica', 'bold')
+              const initials = personalInfo.name.split(' ').map(n => n[0]).join('')
+              pdf.text(initials, leftColX + 30, leftY + 25, { align: 'center' })
+              leftY += 50
+            }
+            
+            // Contact sur les pages suivantes
+            pdf.setTextColor(255, 255, 255)
+            pdf.setFontSize(10)
+            pdf.setFont('helvetica', 'bold')
+            pdf.text('CONTACT', leftColX, leftY)
+            leftY += 8
+            
+            pdf.setFont('helvetica', 'normal')
+            pdf.setFontSize(9)
+            pdf.text(personalInfo.email || 'soualomichel91@gmail.com', leftColX, leftY)
+            leftY += 6
+            pdf.text(personalInfo.phone || '+224620157184', leftColX, leftY)
+            leftY += 10
+            
+            // Langues
+            pdf.setFont('helvetica', 'bold')
+            pdf.setFontSize(10)
+            pdf.text('LANGUES', leftColX, leftY)
+            leftY += 8
+            
+            pdf.setFont('helvetica', 'normal')
+            pdf.setFontSize(9)
+            if (personalInfo.languages && personalInfo.languages.length > 0) {
+              personalInfo.languages.forEach((lang: any) => {
+                pdf.text(`${lang.name}`, leftColX, leftY)
+                leftY += 6
+              })
+            } else {
+              pdf.text('Français', leftColX, leftY)
+              leftY += 6
+              pdf.text('Anglais', leftColX, leftY)
+            }
+            leftY += 10
+            
+            // Compétences (résumé)
+            pdf.setFont('helvetica', 'bold')
+            pdf.setFontSize(10)
+            pdf.text('COMPÉTENCES', leftColX, leftY)
+            leftY += 8
+            
+            pdf.setFont('helvetica', 'normal')
+            pdf.setFontSize(9)
+            if (skillsData.length > 0) {
+              const allSkills = skillsData.slice(0, 8).map((s: any) => s.name)
+              allSkills.forEach((skill: string) => {
+                pdf.text(`• ${skill}`, leftColX + 3, leftY)
+                leftY += 5
+              })
+            }
             
             // Numéro de page
             pdf.setTextColor(128, 128, 128)
@@ -227,21 +292,28 @@ export default function Hero() {
         yPosition += 15
         
         // Expériences professionnelles
-        checkAndAddPage(40)
+        checkAndAddPage(50)
         pdf.setFont('helvetica', 'bold')
         pdf.setFontSize(14)
         pdf.text('EXPÉRIENCES PROFESSIONNELLES', rightColX, yPosition)
-        yPosition += 12
+        yPosition += 15
         
-        if (educationData.length > 0) {
-          const professionalExp = educationData.filter((exp: any) => exp.type === 'professionnel')
-          professionalExp.forEach((exp: any) => {
-            checkAndAddPage(30 + (exp.description ? 20 : 0))
+        const professionalExp = educationData.filter((exp: any) => exp.type === 'professionnel')
+        if (professionalExp.length > 0) {
+          professionalExp.forEach((exp: any, index: number) => {
+            // Calculer la hauteur nécessaire pour cette expérience
+            let expHeight = 35
+            if (exp.description) {
+              const descLines = pdf.splitTextToSize(exp.description, rightColWidth - 10)
+              expHeight += descLines.length * 6
+            }
+            
+            checkAndAddPage(expHeight)
             
             pdf.setFont('helvetica', 'bold')
             pdf.setFontSize(12)
             pdf.text(exp.title.toUpperCase(), rightColX, yPosition)
-            yPosition += 8
+            yPosition += 10
             
             pdf.setFont('helvetica', 'normal')
             pdf.setFontSize(10)
@@ -254,106 +326,160 @@ export default function Hero() {
               const descLines = pdf.splitTextToSize(exp.description, rightColWidth - 10)
               descLines.forEach((line: string) => {
                 pdf.text(`• ${line}`, rightColX + 5, yPosition)
-                yPosition += 5
+                yPosition += 6
               })
             }
-            yPosition += 10
+            yPosition += 12
           })
         } else {
-          // Expérience par défaut
+          // Expérience par défaut plus détaillée
+          checkAndAddPage(60)
+          
           pdf.setFont('helvetica', 'bold')
           pdf.setFontSize(12)
           pdf.text('DÉVELOPPEUR FULL STACK', rightColX, yPosition)
-          yPosition += 8
+          yPosition += 10
           
           pdf.setFont('helvetica', 'normal')
           pdf.setFontSize(10)
           pdf.text('Tech Innovations Guinea • Conakry, Guinée', rightColX, yPosition)
           yPosition += 6
           pdf.text('2023 - Présent', rightColX, yPosition)
-          yPosition += 8
+          yPosition += 10
           
           const defaultDesc = [
-            'Développement d\'applications web modernes et performantes',
-            'Gestion de projet et mentorat d\'équipe',
-            'Architecture technique et optimisation des performances',
-            'Collaboration avec les équipes produit et design'
+            'Développement d\'applications web modernes et performantes avec React et Next.js',
+            'Gestion de projet et mentorat d\'équipe de développeurs juniors',
+            'Architecture technique et optimisation des performances des applications',
+            'Collaboration avec les équipes produit et design pour la livraison des fonctionnalités',
+            'Intégration continue et déploiement automatisé avec CI/CD',
+            'Maintenance et évolution des applications existantes'
           ]
           defaultDesc.forEach(line => {
+            checkAndAddPage(8)
             pdf.text(`• ${line}`, rightColX + 5, yPosition)
-            yPosition += 5
+            yPosition += 6
           })
         }
         
-        yPosition += 15
+        yPosition += 20
         
         // Formations
-        checkAndAddPage(40)
+        checkAndAddPage(50)
         pdf.setFont('helvetica', 'bold')
         pdf.setFontSize(14)
         pdf.text('FORMATIONS', rightColX, yPosition)
-        yPosition += 12
+        yPosition += 15
         
-        if (educationData.length > 0) {
-          const education = educationData.filter((edu: any) => edu.type === 'universitaire' || edu.type === 'formation')
+        const education = educationData.filter((edu: any) => edu.type === 'universitaire' || edu.type === 'formation')
+        if (education.length > 0) {
           education.forEach((edu: any) => {
-            checkAndAddPage(25)
+            checkAndAddPage(30)
             
             pdf.setFont('helvetica', 'bold')
             pdf.setFontSize(12)
             pdf.text(edu.title.toUpperCase(), rightColX, yPosition)
-            yPosition += 8
+            yPosition += 10
             
             pdf.setFont('helvetica', 'normal')
             pdf.setFontSize(10)
             pdf.text(`${edu.institution} • ${edu.location}`, rightColX, yPosition)
             yPosition += 6
             pdf.text(`${edu.startDate} - ${edu.endDate}`, rightColX, yPosition)
-            yPosition += 10
+            yPosition += 8
+            
+            if (edu.description) {
+              const descLines = pdf.splitTextToSize(edu.description, rightColWidth - 10)
+              descLines.forEach((line: string) => {
+                pdf.text(`• ${line}`, rightColX + 5, yPosition)
+                yPosition += 6
+              })
+            }
+            yPosition += 12
           })
         } else {
-          // Formations par défaut
+          // Formations par défaut plus complètes
+          checkAndAddPage(80)
+          
           pdf.setFont('helvetica', 'bold')
           pdf.setFontSize(12)
           pdf.text('MASTER DÉVELOPPEMENT WEB', rightColX, yPosition)
-          yPosition += 8
+          yPosition += 10
           
           pdf.setFont('helvetica', 'normal')
           pdf.setFontSize(10)
           pdf.text('Ecole Supérieure du Numérique • Paris, France', rightColX, yPosition)
           yPosition += 6
           pdf.text('2021 - 2023', rightColX, yPosition)
-          yPosition += 10
+          yPosition += 8
+          
+          const masterDesc = [
+            'Spécialisation en développement web full-stack',
+            'Frameworks modernes : React, Vue.js, Angular',
+            'Backend : Node.js, Python, PHP',
+            'Bases de données : MongoDB, PostgreSQL, MySQL'
+          ]
+          masterDesc.forEach(line => {
+            pdf.text(`• ${line}`, rightColX + 5, yPosition)
+            yPosition += 6
+          })
+          
+          yPosition += 15
           
           pdf.setFont('helvetica', 'bold')
           pdf.setFontSize(12)
           pdf.text('LICENCE INFORMATIQUE', rightColX, yPosition)
-          yPosition += 8
+          yPosition += 10
           
           pdf.setFont('helvetica', 'normal')
           pdf.setFontSize(10)
           pdf.text('Université Paris-Saclay • Orsay, France', rightColX, yPosition)
           yPosition += 6
           pdf.text('2018 - 2021', rightColX, yPosition)
+          yPosition += 8
+          
+          const licenceDesc = [
+            'Algorithmique et structures de données',
+            'Programmation orientée objet',
+            'Bases de données et systèmes d\'information',
+            'Développement d\'applications web et mobiles'
+          ]
+          licenceDesc.forEach(line => {
+            pdf.text(`• ${line}`, rightColX + 5, yPosition)
+            yPosition += 6
+          })
         }
         
-        yPosition += 15
+        yPosition += 20
         
-        // Projets (nouvelle section)
+        // Projets (section complète)
         if (projectsData.length > 0) {
-          checkAndAddPage(40)
+          checkAndAddPage(50)
           pdf.setFont('helvetica', 'bold')
           pdf.setFontSize(14)
           pdf.text('PROJETS NOTABLES', rightColX, yPosition)
-          yPosition += 12
+          yPosition += 15
           
-          projectsData.slice(0, 5).forEach((project: any) => {
-            checkAndAddPage(35)
+          projectsData.forEach((project: any, index: number) => {
+            // Calculer la hauteur nécessaire pour ce projet
+            let projectHeight = 45
+            if (project.technologies && project.technologies.length > 0) {
+              projectHeight += 8
+            }
+            if (project.description) {
+              const descLines = pdf.splitTextToSize(project.description, rightColWidth - 10)
+              projectHeight += descLines.length * 6
+            }
+            if (project.github || project.demo) {
+              projectHeight += 12
+            }
+            
+            checkAndAddPage(projectHeight)
             
             pdf.setFont('helvetica', 'bold')
             pdf.setFontSize(12)
             pdf.text(project.title.toUpperCase(), rightColX, yPosition)
-            yPosition += 8
+            yPosition += 10
             
             pdf.setFont('helvetica', 'normal')
             pdf.setFontSize(10)
@@ -361,7 +487,7 @@ export default function Hero() {
             // Technologies
             if (project.technologies && project.technologies.length > 0) {
               pdf.text(`Technologies: ${project.technologies.join(', ')}`, rightColX, yPosition)
-              yPosition += 6
+              yPosition += 8
             }
             
             // Description
@@ -369,23 +495,82 @@ export default function Hero() {
               const descLines = pdf.splitTextToSize(project.description, rightColWidth - 10)
               descLines.forEach((line: string) => {
                 pdf.text(`• ${line}`, rightColX + 5, yPosition)
-                yPosition += 5
+                yPosition += 6
               })
+              yPosition += 5
             }
             
             // Liens
             if (project.github || project.demo) {
-              yPosition += 3
+              yPosition += 5
               if (project.github) {
                 pdf.text(`GitHub: ${project.github}`, rightColX, yPosition)
-                yPosition += 5
+                yPosition += 6
               }
               if (project.demo) {
                 pdf.text(`Demo: ${project.demo}`, rightColX, yPosition)
-                yPosition += 5
+                yPosition += 6
               }
             }
+            yPosition += 15
+          })
+        } else {
+          // Projets par défaut si aucun projet n'existe
+          checkAndAddPage(100)
+          
+          pdf.setFont('helvetica', 'bold')
+          pdf.setFontSize(14)
+          pdf.text('PROJETS NOTABLES', rightColX, yPosition)
+          yPosition += 15
+          
+          const defaultProjects = [
+            {
+              title: 'Portfolio Personnel',
+              technologies: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS'],
+              description: 'Développement d\'un portfolio moderne et responsive avec gestion des projets et compétences',
+              github: 'https://github.com/username/portfolio',
+              demo: 'https://portfolio.example.com'
+            },
+            {
+              title: 'Application de Gestion',
+              technologies: ['Vue.js', 'Node.js', 'Express', 'MongoDB'],
+              description: 'Application complète de gestion avec authentification, CRUD et dashboard administrateur',
+              github: 'https://github.com/username/management-app',
+              demo: 'https://management.example.com'
+            },
+            {
+              title: 'E-commerce Platform',
+              technologies: ['React', 'Node.js', 'Stripe API', 'PostgreSQL'],
+              description: 'Plateforme e-commerce avec panier, paiement et gestion des commandes',
+              github: 'https://github.com/username/ecommerce',
+              demo: 'https://shop.example.com'
+            }
+          ]
+          
+          defaultProjects.forEach((project) => {
+            checkAndAddPage(60)
+            
+            pdf.setFont('helvetica', 'bold')
+            pdf.setFontSize(12)
+            pdf.text(project.title.toUpperCase(), rightColX, yPosition)
             yPosition += 10
+            
+            pdf.setFont('helvetica', 'normal')
+            pdf.setFontSize(10)
+            pdf.text(`Technologies: ${project.technologies.join(', ')}`, rightColX, yPosition)
+            yPosition += 8
+            
+            const descLines = pdf.splitTextToSize(project.description, rightColWidth - 10)
+            descLines.forEach((line: string) => {
+              pdf.text(`• ${line}`, rightColX + 5, yPosition)
+              yPosition += 6
+            })
+            
+            yPosition += 5
+            pdf.text(`GitHub: ${project.github}`, rightColX, yPosition)
+            yPosition += 6
+            pdf.text(`Demo: ${project.demo}`, rightColX, yPosition)
+            yPosition += 15
           })
         }
         
