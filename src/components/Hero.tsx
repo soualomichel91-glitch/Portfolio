@@ -115,6 +115,20 @@ export default function Hero() {
               })
             }
             
+            // Nom et titre réduit sur les pages suivantes
+            pdf.setTextColor(0, 0, 0)
+            pdf.setFontSize(16)
+            pdf.setFont('helvetica', 'bold')
+            pdf.text(personalInfo.name.toUpperCase(), rightColX, 30)
+            
+            // Titre professionnel avec gestion du retour à la ligne
+            pdf.setFontSize(10)
+            pdf.setFont('helvetica', 'normal')
+            const titleLines = pdf.splitTextToSize(personalInfo.title, rightColWidth)
+            titleLines.forEach((line: string, index: number) => {
+              pdf.text(line, rightColX, 45 + (index * 8))
+            })
+
             // Numéro de page
             pdf.setTextColor(128, 128, 128)
             pdf.setFontSize(8)
@@ -270,10 +284,27 @@ export default function Hero() {
         pdf.text(personalInfo.name.toUpperCase(), rightColX, yPosition)
         yPosition += 15
         
+        // Titre professionnel avec gestion automatique du retour à la ligne
         pdf.setFontSize(14)
         pdf.setFont('helvetica', 'normal')
-        pdf.text(personalInfo.title, rightColX, yPosition)
-        yPosition += 15
+        
+        // Vérifier si le titre est trop long et le diviser si nécessaire
+        const titleLines = pdf.splitTextToSize(personalInfo.title, rightColWidth)
+        
+        if (titleLines.length > 1) {
+          // Si le titre tient sur plusieurs lignes, ajuster l'espacement
+          titleLines.forEach((line: string, index: number) => {
+            pdf.text(line, rightColX, yPosition)
+            if (index < titleLines.length - 1) {
+              yPosition += 10 // Espacement plus petit entre les lignes du titre
+            }
+          })
+          yPosition += 10 // Espacement après le titre multiligne
+        } else {
+          // Titre sur une seule ligne
+          pdf.text(personalInfo.title, rightColX, yPosition)
+          yPosition += 15
+        }
         
         // Ligne de séparation
         pdf.setDrawColor(0, 0, 0)
